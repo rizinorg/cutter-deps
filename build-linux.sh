@@ -112,7 +112,7 @@ build_qt() {
 		-skip qtwebview \
 		|| exit 1
 	
-	make -j$BUILD_THREAD || exit 1
+	make -j$BUILD_THREADS || exit 1
 	make install > /dev/null || exit 1
 	
 	cd ../..
