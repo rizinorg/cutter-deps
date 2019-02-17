@@ -16,7 +16,7 @@ PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.1.tar.xz
 PYSIDE_SRC_MD5=c247fc1de38929d81aedd1c93d629d9e
 PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.1-src/pyside-setup-everywhere-src-5.12.1.tar.xz
 
-BUILD_THREADS=8
+BUILD_THREADS=4
 
 ROOT_DIR="$PWD"
 PYTHON_PREFIX="$PWD/python"
