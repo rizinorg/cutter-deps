@@ -138,7 +138,7 @@ build_pyside() {
 	
 	mkdir -p build && cd build || exit 1
 	
-	export LD_LIBRARY_PATH="$PYTHON_PREFIX/lib:$LD_LIBRARY_PATH"
+	export LD_LIBRARY_PATH="$PYTHON_PREFIX/lib:$QT_PREFIX/lib:$LD_LIBRARY_PATH"
 
 	PYTHON_VERSION=3
 
