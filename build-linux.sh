@@ -1,3 +1,4 @@
+#!/bin/bash
 
 PYTHON_SRC_FILE=Python-3.6.4.tar.xz
 PYTHON_SRC_MD5=1325134dd525b4a2c3272a1a0214dd54

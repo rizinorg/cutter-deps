@@ -1,0 +1,6 @@
+
+language: c
+dist: xenial
+sudo: false
+
+script: ./build-linux.sh
