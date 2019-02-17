@@ -48,7 +48,7 @@ build_python() {
 
 	echo "Building Python to install to prefix $PYTHON_PREFIX"
 	./configure --enable-shared --prefix="$PYTHON_PREFIX" || exit 1
-	make -j$BUILD_THREADS || exit 1
+	make -j$BUILD_THREADS > /dev/null || exit 1
 	make install > /dev/null || exit 1
 	cd "$ROOT_DIR"
 
@@ -56,7 +56,7 @@ build_python() {
 	cd patchelf-0.9 || exit 1
 	PATCHELF_DIR="$PWD"
 	./configure || exit 1
-	make || exit 1
+	make > /dev/null || exit 1
 	
 	for lib in "$PYTHON_PREFIX/lib/python3.6/lib-dynload"/*.so; do
 		echo "  patching $lib"
@@ -112,7 +112,7 @@ build_qt() {
 		-skip qtwebview \
 		|| exit 1
 	
-	make -j$BUILD_THREADS || exit 1
+	make -j$BUILD_THREADS > /dev/null || exit 1
 	make install > /dev/null || exit 1
 	
 	cd ../..
@@ -159,8 +159,8 @@ build_pyside() {
 		-DBUILD_TESTS=OFF \
 		-DCMAKE_BUILD_TYPE=Release \
 		../../sources/shiboken2 || exit 1
-	make -j$BUILD_THREADS || exit 1
-	make install || exit 1
+	make -j$BUILD_THREADS > /dev/null || exit 1
+	make install > /dev/null || exit 1
 	cd ..
 
 	echo ""
@@ -181,8 +181,8 @@ build_pyside() {
 		-DCMAKE_BUILD_TYPE=Release \
 		-DMODULES="Core;Gui;Widgets" \
 		../../sources/pyside2 || exit 1
-	make -j$BUILD_THREADS || exit 1
-	make install || exit 1
+	make -j$BUILD_THREADS > /dev/null || exit 1
+	make install > /dev/null || exit 1
 	cd ..
 	
 	cd ..
