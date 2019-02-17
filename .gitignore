@@ -1,5 +1,9 @@
 /qt
 /pyside
+/python
 /test
 /qt-everywhere-src-*
 /pyside-setup-everywhere-src-*
+/Python-3.6.4*
+/patchelf-0.9*
+/cutter-deps.tar.gz
