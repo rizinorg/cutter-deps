@@ -9,6 +9,8 @@ PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySi
 
 BUILD_THREADS=8
 
+cd "$(dirname "$0")"
+
 check_md5() {
 	echo "$2 $1" | md5sum -c - || exit 1
 }
@@ -22,20 +24,24 @@ download() {
 
 #download "$QT_SRC_URL" "$QT_SRC_FILE" "$QT_SRC_MD5"
 #tar -xf "$QT_SRC_FILE" || exit 1
-#download "$PYSIDE_SRC_URL" "$PYSIDE_SRC_FILE" "$PYSIDE_SRC_MD5"
-#tar -xf "$PYSIDE_SRC_FILE" || exit 1
+download "$PYSIDE_SRC_URL" "$PYSIDE_SRC_FILE" "$PYSIDE_SRC_MD5"
+tar -xf "$PYSIDE_SRC_FILE" || exit 1
 
 QT_PREFIX="$PWD/qt"
 PYSIDE_PREFIX="$PWD/pyside"
-
-echo "QT_PREFIX=$QT_PREFIX"
-exit 0
 
 #####################
 # Build PySide2
 #####################
 
 cd pyside-setup-everywhere-src-5.12.1 || exit 1
+
+# Patch needed, so the PySide2 CMakeLists.txt doesn't search for Qt5UiTools and other stuff,
+# which would mess up finding the actual modules later.
+patch sources/pyside2/CMakeLists.txt ../patch/pyside2-CMakeLists.txt.patch || exit 1
+echo "" > sources/pyside2/cmake/Macros/FindQt5Extra.cmake || exit 1
+#cp ../patch/CMakeLists.txt sources/pyside2/CMakeLists.txt || exit 1
+
 mkdir -p build && cd build || exit 1
 
 PYTHON_VERSION=3
