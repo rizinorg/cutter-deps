@@ -1,0 +1,67 @@
+--- pyside-setup-everywhere-src-5.12.1/sources/pyside2/PySide2/QtGui/CMakeLists.txt	2019-01-31 15:05:01.000000000 +0100
++++ patch/CMakeLists.txt	2019-02-17 18:03:09.839233464 +0100
+@@ -7,7 +7,6 @@
+ get_property(QtGui_enabled_features TARGET Qt5::Gui PROPERTY INTERFACE_QT_ENABLED_FEATURES)
+ 
+ set(QtGui_SRC
+-${QtGui_GEN_DIR}/qabstractopenglfunctions_wrapper.cpp
+ ${QtGui_GEN_DIR}/qabstracttextdocumentlayout_paintcontext_wrapper.cpp
+ ${QtGui_GEN_DIR}/qabstracttextdocumentlayout_selection_wrapper.cpp
+ ${QtGui_GEN_DIR}/qabstracttextdocumentlayout_wrapper.cpp
+@@ -89,21 +88,6 @@
+ ${QtGui_GEN_DIR}/qmovie_wrapper.cpp
+ ${QtGui_GEN_DIR}/qnativegestureevent_wrapper.cpp
+ ${QtGui_GEN_DIR}/qoffscreensurface_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglcontextgroup_wrapper.cpp
+-${QtGui_GEN_DIR}/qopengldebuglogger_wrapper.cpp
+-${QtGui_GEN_DIR}/qopengldebugmessage_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglextrafunctions_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglframebufferobjectformat_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglfunctions_wrapper.cpp
+-# Compile error on Windows: ${QtGui_GEN_DIR}/qopenglpaintdevice_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglpixeltransferoptions_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglshaderprogram_wrapper.cpp
+-${QtGui_GEN_DIR}/qopengltexture_wrapper.cpp
+-${QtGui_GEN_DIR}/qopengltextureblitter_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglversionprofile_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglvertexarrayobject_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglvertexarrayobject_binder_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglwindow_wrapper.cpp
+ ${QtGui_GEN_DIR}/qpagedpaintdevice_margins_wrapper.cpp
+ ${QtGui_GEN_DIR}/qpagedpaintdevice_wrapper.cpp
+ ${QtGui_GEN_DIR}/qpagelayout_wrapper.cpp
+@@ -142,14 +126,9 @@
+ ${QtGui_GEN_DIR}/qstandarditem_wrapper.cpp
+ ${QtGui_GEN_DIR}/qstandarditemmodel_wrapper.cpp
+ ${QtGui_GEN_DIR}/qstatustipevent_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglbuffer_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglcontext_wrapper.cpp
+ ${QtGui_GEN_DIR}/qaccessible_state_wrapper.cpp
+ ${QtGui_GEN_DIR}/qaccessibleinterface_wrapper.cpp
+ ${QtGui_GEN_DIR}/qscreen_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglshader_wrapper.cpp
+-#${QtGui_GEN_DIR}/qopenglshaderprogram_wrapper.cpp
+-${QtGui_GEN_DIR}/qopenglframebufferobject_wrapper.cpp
+ ${QtGui_GEN_DIR}/qrasterwindow_wrapper.cpp
+ ${QtGui_GEN_DIR}/qrawfont_wrapper.cpp
+ ${QtGui_GEN_DIR}/qscrollevent_wrapper.cpp
+@@ -209,19 +188,6 @@
+ ${QtGui_GEN_DIR}/qtgui_module_wrapper.cpp
+ )
+ 
+-# cf qtbase/src/gui/opengl/opengl.pri
+-list(FIND QtGui_enabled_features "opengles2" _opengles2Index)
+-# ### fixme: For cmake >= 3.3: if(opengles2 IN_LIST QtGui_enabled_features)
+-if(_opengles2Index GREATER -1)
+-    list(APPEND QtGui_DROPPED_ENTRIES QOpenGLTimeMonitor QOpenGLTimerQuery)
+-    message(STATUS "Qt5Gui: Dropping Desktop OpenGL classes (GLES2)")
+-else()
+-    list(APPEND QtGui_SRC
+-         ${QtGui_GEN_DIR}/qopengltimemonitor_wrapper.cpp
+-         ${QtGui_GEN_DIR}/qopengltimerquery_wrapper.cpp)
+-    message(STATUS "Qt5Gui: Adding Desktop OpenGL classes")
+-endif()
+-
+ configure_file("${QtGui_SOURCE_DIR}/typesystem_gui.xml.in"
+                "${QtGui_BINARY_DIR}/typesystem_gui.xml" @ONLY)
+ 

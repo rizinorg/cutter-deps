@@ -40,7 +40,10 @@ cd pyside-setup-everywhere-src-5.12.1 || exit 1
 # which would mess up finding the actual modules later.
 patch sources/pyside2/CMakeLists.txt ../patch/pyside2-CMakeLists.txt.patch || exit 1
 echo "" > sources/pyside2/cmake/Macros/FindQt5Extra.cmake || exit 1
-#cp ../patch/CMakeLists.txt sources/pyside2/CMakeLists.txt || exit 1
+
+# Patches to remove OpenGL-related source files.
+patch sources/pyside2/PySide2/QtGui/CMakeLists.txt ../patch/pyside2-QtGui-CMakeLists.txt.patch || exit 1
+patch sources/pyside2/PySide2/QtWidgets/CMakeLists.txt ../patch/pyside2-QtWidgets-CMakeLists.txt.patch || exit 1
 
 mkdir -p build && cd build || exit 1
 
@@ -60,18 +63,17 @@ cd ..
 
 mkdir -p pyside2 && cd pyside2 || exit 1
 cmake \
-	-DCMAKE_PREFIX_PATH=$QT_PREFIX \
+	-DCMAKE_PREFIX_PATH="$QT_PREFIX" \
 	-DCMAKE_INSTALL_PREFIX="$PYSIDE_PREFIX" \
 	-DUSE_PYTHON_VERSION=$PYTHON_VERSION \
 	-DBUILD_TESTS=OFF \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DMODULES="Core;Gui;Widgets" \
 	../../sources/pyside2 || exit 1
-#make -j$BUILD_THREADS || exit 1
-#make install || exit 1
+make -j$BUILD_THREADS || exit 1
+make install || exit 1
 cd ..
 
-#python setup.py --qmake=../qt/bin/qmake --module-subset=Core,Gui,Widgets --skip-packaging build 
 exit 0
 
 #####################
