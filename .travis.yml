@@ -2,9 +2,4 @@
 language: c
 dist: xenial
 
-addons:
-  apt:
-    packages:
-     - libclang-dev
-
 script: ./build-linux.sh

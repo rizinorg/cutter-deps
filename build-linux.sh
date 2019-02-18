@@ -137,8 +137,11 @@ build_pyside() {
 	patch sources/pyside2/PySide2/QtWidgets/CMakeLists.txt ../patch/pyside2-QtWidgets-CMakeLists.txt.patch || exit 1
 	
 	mkdir -p build && cd build || exit 1
+
+	LLVM_LIBDIR=`llvm-config --libdir`
+	echo "LLVM libdir: \"$LLVM_LIBDIR\""
 	
-	export LD_LIBRARY_PATH="$PYTHON_PREFIX/lib:$QT_PREFIX/lib:$LD_LIBRARY_PATH"
+	export LD_LIBRARY_PATH="$PYTHON_PREFIX/lib:$QT_PREFIX/lib:$LLVM_LIBDIR:$LD_LIBRARY_PATH"
 
 	PYTHON_VERSION=3
 
