@@ -1,7 +1,6 @@
 
 language: c
 dist: xenial
-sudo: false
 
 addons:
   apt:
