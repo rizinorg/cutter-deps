@@ -11,7 +11,6 @@ PYTHON_LIBRARY=${PYTHON_PREFIX}/lib/libpython3.so
 PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python3.6m
 PYTHON_EXECUTABLE=${PYTHON_PREFIX}/bin/python3
 
-export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${LD_LIBRARY_PATH}
 
 PATCHELF_SRC_FILE=patchelf-0.9.tar.bz2
 PATCHELF_SRC_MD5=d02687629c7e1698a486a93a0d607947
@@ -34,16 +33,20 @@ PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySi
 PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.1
 PYSIDE_PREFIX=${ROOT_DIR}/pyside
 
+PACKAGE_FILE=cutter-deps.tar.gz
+
 BUILD_THREADS=4
 
+LLVM_LIBDIR=`llvm-config --libdir`
+export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${LLVM_LIBDIR}:${LD_LIBRARY_PATH}
 
-all: python qt pyside
+all: python qt pyside pkg
 
 .PHONY: clean
 clean: clean-python clean-qt clean-pyside
 
 .PHONY: distclean
-distclean: distclean-python distclean-qt distclean-pyside
+distclean: distclean-python distclean-qt distclean-pyside distclean-pkg
 
 # Download Targets
 
@@ -160,4 +163,16 @@ clean-pyside:
 .PHONY: distclean-pyside
 distclean-pyside: clean-pyside
 	rm -rf "${PYSIDE_PREFIX}"
+
+# Package
+
+${PACKAGE_FILE}: python qt pyside
+	tar -czf "${PACKAGE_FILE}" qt python pyside
+
+.PHONY: pkg
+pkg: ${PACKAGE_FILE}
+
+.PHONY: distclean-pkg
+distclean-pkg:
+	rm -f "${PACKAGE_FILE}"
 
