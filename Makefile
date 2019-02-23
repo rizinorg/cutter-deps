@@ -21,8 +21,8 @@ PATCHELF_SRC_URL=https://nixos.org/releases/patchelf/patchelf-0.9/patchelf-0.9.t
 #QT_SRC_URL=https://download.qt.io/official_releases/qt/5.12/5.12.1/single/qt-everywhere-src-5.12.1.tar.xz
 
 QT_BIN_FILE=cutter-deps-qt.tar.gz
-QT_BIN_URL=https://github.com/thestr4ng3r/cutter-deps-qt/releases/download/v1/cutter-deps-qt.tar.gz
-QT_BIN_MD5=6e14fd8e804954feeadc67776063e0c6
+QT_BIN_URL=https://github.com/thestr4ng3r/cutter-deps-qt/releases/download/v2/cutter-deps-qt.tar.gz
+QT_BIN_MD5=39fadcc9c9a3fc07ab997a38b9133be5
 QT_BIN_DIR=qt
 QT_PREFIX=${ROOT_DIR}/${QT_BIN_DIR}
 ${QT_BIN_DIR}_target=QT_BIN
@@ -117,6 +117,9 @@ ${PYSIDE_SRC_DIR}:
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside2-CMakeLists.txt.patch
 	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
 
+	# Patch to prevent complete overriding of LD_LIBRARY_PATH
+	patch "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/PySideModules.cmake" patch/pyside2-PySideModules.cmake.patch
+
 	# Patches to remove OpenGL-related source files.
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtGui/CMakeLists.txt" patch/pyside2-QtGui-CMakeLists.txt.patch
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtWidgets/CMakeLists.txt" patch/pyside2-QtWidgets-CMakeLists.txt.patch
@@ -178,7 +181,6 @@ distclean-pyside: clean-pyside
 # Package
 
 ${PACKAGE_FILE}: python qt pyside
-	ls
 	tar -czf "${PACKAGE_FILE}" qt python pyside
 
 .PHONY: pkg
