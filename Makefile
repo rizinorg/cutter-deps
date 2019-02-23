@@ -27,10 +27,13 @@ QT_BIN_DIR=qt
 QT_PREFIX=${ROOT_DIR}/${QT_BIN_DIR}
 ${QT_BIN_DIR}_target=QT_BIN
 
-PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.1.tar.xz
-PYSIDE_SRC_MD5=c247fc1de38929d81aedd1c93d629d9e
-PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.1-src/pyside-setup-everywhere-src-5.12.1.tar.xz
-PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.1
+#PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.1.tar.xz
+#PYSIDE_SRC_MD5=c247fc1de38929d81aedd1c93d629d9e
+#PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.1-src/pyside-setup-everywhere-src-5.12.1.tar.xz
+#PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.1
+PYSIDE_SRC_DIR=pyside-src
+PYSIDE_SRC_GIT=https://code.qt.io/pyside/pyside-setup.git
+PYSIDE_SRC_GIT_COMMIT=7a7952fc2e0809ef7f12a726376cec457897c364
 PYSIDE_PREFIX=${ROOT_DIR}/pyside
 
 PACKAGE_FILE=cutter-deps.tar.gz
@@ -100,7 +103,14 @@ distclean-qt: clean-qt
 # Shiboken2 + PySide2
 
 ${PYSIDE_SRC_DIR}:
-	$(call download_extract,${PYSIDE_SRC_URL},${PYSIDE_SRC_FILE},${PYSIDE_SRC_MD5})
+	@echo ""
+	@echo "#########################"
+	@echo "# Downloading PySide2   #"
+	@echo "#########################"
+	@echo ""
+
+	git clone "${PYSIDE_SRC_GIT}" "${PYSIDE_SRC_DIR}"
+	cd "${PYSIDE_SRC_DIR}" && git checkout "${PYSIDE_SRC_GIT_COMMIT}"
 	
 	# Patch needed, so the PySide2 CMakeLists.txt doesn't search for Qt5UiTools and other stuff,
 	# which would mess up finding the actual modules later.
