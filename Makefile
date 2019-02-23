@@ -37,8 +37,8 @@ PACKAGE_FILE=cutter-deps.tar.gz
 
 BUILD_THREADS=4
 
-LLVM_LIBDIR=`llvm-config --libdir`
-export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${LLVM_LIBDIR}:${LD_LIBRARY_PATH}
+LLVM_LIBDIR=$(shell llvm-config --libdir)
+export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${LD_LIBRARY_PATH}
 
 all: python qt pyside pkg
 
