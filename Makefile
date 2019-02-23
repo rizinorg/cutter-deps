@@ -120,8 +120,8 @@ pyside: python qt ${PYSIDE_SRC_DIR}
 
 	echo "${LD_LIBRARY_PATH}"
 
-	mkdir -p "${PYSIDE_SRC_DIR}/buid/shiboken2"
-	cd "${PYSIDE_SRC_DIR}/buid/shiboken2" && cmake \
+	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken2"
+	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && cmake \
 		-DCMAKE_INSTALL_PREFIX="${PYSIDE_PREFIX}" \
 		-DCMAKE_INSTALL_PREFIX="${QT_PREFIX}" \
 		-DUSE_PYTHON_VERSION=3 \
@@ -131,8 +131,8 @@ pyside: python qt ${PYSIDE_SRC_DIR}
 		-DBUILD_TESTS=OFF \
 		-DCMAKE_BUILD_TYPE=Release \
 		../../sources/shiboken2
-	make -C "${PYSIDE_SRC_DIR}/buid/shiboken2" -j${BUILD_THREADS} > /dev/null
-	make -C "${PYSIDE_SRC_DIR}/buid/shiboken2" install > /dev/null
+	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" -j${BUILD_THREADS} > /dev/null
+	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" install > /dev/null
 
 	@echo ""
 	@echo "#########################"
@@ -140,8 +140,8 @@ pyside: python qt ${PYSIDE_SRC_DIR}
 	@echo "#########################"
 	@echo ""
 
-	mkdir -p "${PYSIDE_SRC_DIR}/buid/pyside2"
-	cd "${PYSIDE_SRC_DIR}/buid/pyside2" && cmake \
+	mkdir -p "${PYSIDE_SRC_DIR}/build/pyside2"
+	cd "${PYSIDE_SRC_DIR}/build/pyside2" && cmake \
 		-DCMAKE_PREFIX_PATH="${PYSIDE_PREFIX}" \
 		-DCMAKE_INSTALL_PREFIX="${QT_PREFIX};${PYSIDE_PREFIX}" \
 		-DUSE_PYTHON_VERSION=3 \
@@ -153,8 +153,8 @@ pyside: python qt ${PYSIDE_SRC_DIR}
 		-DCMAKE_BUILD_TYPE=Release \
 		-DMODULES="Core;Gui;Widgets" \
 		../../sources/pyside2
-	make -C "${PYSIDE_SRC_DIR}/buid/pyside2" -j${BUILD_THREADS} > /dev/null
-	make -C "${PYSIDE_SRC_DIR}/buid/pyside2" install > /dev/null
+	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j${BUILD_THREADS} > /dev/null
+	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install > /dev/null
 
 .PHONY: clean-pyside
 clean-pyside:
@@ -168,6 +168,7 @@ distclean-pyside: clean-pyside
 # Package
 
 ${PACKAGE_FILE}: python qt pyside
+	ls
 	tar -czf "${PACKAGE_FILE}" qt python pyside
 
 .PHONY: pkg
