@@ -2,4 +2,4 @@
 language: c
 dist: xenial
 
-script: ./build-linux.sh
+script: make
