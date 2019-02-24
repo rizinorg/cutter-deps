@@ -1,0 +1,10 @@
+--- pyside-setup-everywhere-src-5.12.1/sources/pyside2/PySide2/QtWidgets/CMakeLists.txt	2019-01-31 15:05:01.000000000 +0100
++++ patch/CMakeLists.txt	2019-02-17 18:07:57.867778449 +0100
+@@ -109,7 +109,6 @@
+ ${QtWidgets_GEN_DIR}/qmenubar_wrapper.cpp
+ ${QtWidgets_GEN_DIR}/qmessagebox_wrapper.cpp
+ ${QtWidgets_GEN_DIR}/qmouseeventtransition_wrapper.cpp
+-${QtWidgets_GEN_DIR}/qopenglwidget_wrapper.cpp
+ ${QtWidgets_GEN_DIR}/qpangesture_wrapper.cpp
+ ${QtWidgets_GEN_DIR}/qpinchgesture_wrapper.cpp
+ ${QtWidgets_GEN_DIR}/qplaintextdocumentlayout_wrapper.cpp

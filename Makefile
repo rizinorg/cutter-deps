@@ -27,13 +27,13 @@ QT_BIN_DIR=qt
 QT_PREFIX=${ROOT_DIR}/${QT_BIN_DIR}
 ${QT_BIN_DIR}_target=QT_BIN
 
-#PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.1.tar.xz
-#PYSIDE_SRC_MD5=c247fc1de38929d81aedd1c93d629d9e
-#PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.1-src/pyside-setup-everywhere-src-5.12.1.tar.xz
-#PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.1
-PYSIDE_SRC_DIR=pyside-src
-PYSIDE_SRC_GIT=https://code.qt.io/pyside/pyside-setup.git
-PYSIDE_SRC_GIT_COMMIT=7a7952fc2e0809ef7f12a726376cec457897c364
+PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.1.tar.xz
+PYSIDE_SRC_MD5=c247fc1de38929d81aedd1c93d629d9e
+PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.1-src/pyside-setup-everywhere-src-5.12.1.tar.xz
+PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.1
+#PYSIDE_SRC_DIR=pyside-src
+#PYSIDE_SRC_GIT=https://code.qt.io/pyside/pyside-setup.git
+#PYSIDE_SRC_GIT_COMMIT=7a7952fc2e0809ef7f12a726376cec457897c364
 PYSIDE_PREFIX=${ROOT_DIR}/pyside
 
 PACKAGE_FILE=cutter-deps.tar.gz
@@ -109,20 +109,21 @@ ${PYSIDE_SRC_DIR}:
 	@echo "#########################"
 	@echo ""
 
-	git clone "${PYSIDE_SRC_GIT}" "${PYSIDE_SRC_DIR}"
-	cd "${PYSIDE_SRC_DIR}" && git checkout "${PYSIDE_SRC_GIT_COMMIT}"
+	$(call download_extract,${PYSIDE_SRC_URL},${PYSIDE_SRC_FILE},${PYSIDE_SRC_MD5})
+	#git clone "${PYSIDE_SRC_GIT}" "${PYSIDE_SRC_DIR}"
+	#cd "${PYSIDE_SRC_DIR}" && git checkout "${PYSIDE_SRC_GIT_COMMIT}"
 	
 	# Patch needed, so the PySide2 CMakeLists.txt doesn't search for Qt5UiTools and other stuff,
 	# which would mess up finding the actual modules later.
-	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside2-CMakeLists.txt.patch
+	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.12.1/CMakeLists.txt.patch
 	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
 
 	# Patch to prevent complete overriding of LD_LIBRARY_PATH
-	patch "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/PySideModules.cmake" patch/pyside2-PySideModules.cmake.patch
+	#patch "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/PySideModules.cmake" patch/pyside2-PySideModules.cmake.patch
 
 	# Patches to remove OpenGL-related source files.
-	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtGui/CMakeLists.txt" patch/pyside2-QtGui-CMakeLists.txt.patch
-	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtWidgets/CMakeLists.txt" patch/pyside2-QtWidgets-CMakeLists.txt.patch
+	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtGui/CMakeLists.txt" patch/pyside-5.12.1/QtGui-CMakeLists.txt.patch
+	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtWidgets/CMakeLists.txt" patch/pyside-5.12.1/QtWidgets-CMakeLists.txt.patch
 
 pyside: python qt ${PYSIDE_SRC_DIR}
 	@echo ""
