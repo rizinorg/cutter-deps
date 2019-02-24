@@ -9,6 +9,9 @@ export PATH="$CUTTER_DEPS_ROOT/qt/bin:`pwd`/python/bin:`pwd`/pyside/bin:$PATH"
 
 export PKG_CONFIG_PATH="$CUTTER_DEPS_ROOT/qt/lib/pkgconfig:`pwd`/python/lib/pkgconfig:`pwd`/pyside/lib/pkgconfig"
 
+# For QMake
+export QTDIR="$CUTTER_DEPS_ROOT/qt"
+
 # For CMake
 export Qt5_ROOT="$CUTTER_DEPS_ROOT/qt"
 export PythonLibs_ROOT="$CUTTER_DEPS_ROOT/python"
