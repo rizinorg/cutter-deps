@@ -12,3 +12,7 @@ for file in $REPLACE_FILES; do
 	echo "Relocating $file"
 	sed -i -e "s/$ORIGINAL_ROOT_ESCAPED/$CURRENT_ROOT_ESCAPED/g" "$file"
 done
+
+echo "[Paths]
+Prefix = $CURRENT_ROOT
+" > qt/bin/qt.conf
