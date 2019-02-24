@@ -43,13 +43,13 @@ BUILD_THREADS=4
 LLVM_LIBDIR=$(shell llvm-config --libdir)
 export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${LD_LIBRARY_PATH}
 
-all: python qt pyside pkg
+all: python qt pyside relocate.sh pkg
 
 .PHONY: clean
-clean: clean-python clean-qt clean-pyside
+clean: clean-python clean-qt clean-pyside clean-relocate.sh
 
 .PHONY: distclean
-distclean: distclean-python distclean-qt distclean-pyside distclean-pkg
+distclean: distclean-python distclean-qt distclean-pyside distclean-pkg clean-relocate.sh
 
 # Download Targets
 
@@ -178,10 +178,21 @@ clean-pyside:
 distclean-pyside: clean-pyside
 	rm -rf "${PYSIDE_PREFIX}"
 
+# Relocation script
+
+relocate.sh: relocate.sh.in
+	printf "#!/bin/bash\n\nORIGINAL_ROOT=\"${ROOT_DIR}\"\n" > relocate.sh
+	cat relocate.sh.in >> relocate.sh
+	chmod +x relocate.sh
+
+.PHONY: clean-relocate.sh
+clean-relocate.sh:
+	rm -f relocate.sh
+
 # Package
 
-${PACKAGE_FILE}: python qt pyside
-	tar -czf "${PACKAGE_FILE}" qt python pyside
+${PACKAGE_FILE}: python qt pyside relocate.sh
+	tar -czf "${PACKAGE_FILE}" qt python pyside relocate.sh env.sh
 
 .PHONY: pkg
 pkg: ${PACKAGE_FILE}
@@ -189,4 +200,5 @@ pkg: ${PACKAGE_FILE}
 .PHONY: distclean-pkg
 distclean-pkg:
 	rm -f "${PACKAGE_FILE}"
+
 

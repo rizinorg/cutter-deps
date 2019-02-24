@@ -1,0 +1,14 @@
+
+CURRENT_ROOT="$(cd $(dirname "$0") && pwd)"
+
+cd "$CURRENT_ROOT"
+
+REPLACE_FILES="pyside/lib/cmake/**/*.cmake pyside/lib/pkgconfig/*.pc"
+
+ORIGINAL_ROOT_ESCAPED="${ORIGINAL_ROOT//'/'/$'\\/'}"
+CURRENT_ROOT_ESCAPED="${CURRENT_ROOT//'/'/$'\\/'}"
+
+for file in $REPLACE_FILES; do
+	echo "Relocating $file"
+	sed -i -e "s/$ORIGINAL_ROOT_ESCAPED/$CURRENT_ROOT_ESCAPED/g" "$file"
+done
