@@ -1,5 +1,5 @@
 
-CURRENT_ROOT="$(cd $(dirname "$0") && pwd)"
+CURRENT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd "$CURRENT_ROOT"
 

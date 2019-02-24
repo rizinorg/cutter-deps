@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CUTTER_DEPS_ROOT="$(dirname "$0")"
+CUTTER_DEPS_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 export CUTTER_DEPS_PYTHON_PREFIX="$CUTTER_DEPS_ROOT/python"
 
