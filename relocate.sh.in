@@ -3,7 +3,7 @@ CURRENT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd "$CURRENT_ROOT"
 
-REPLACE_FILES="pyside/lib/cmake/**/*.cmake pyside/lib/pkgconfig/*.pc"
+REPLACE_FILES="pyside/lib/cmake/**/*.cmake pyside/lib/pkgconfig/*.pc qt/lib/pkgconfig/*.pc python/lib/pkgconfig/*.pc"
 
 ORIGINAL_ROOT_ESCAPED="${ORIGINAL_ROOT//'/'/$'\\/'}"
 CURRENT_ROOT_ESCAPED="${CURRENT_ROOT//'/'/$'\\/'}"
