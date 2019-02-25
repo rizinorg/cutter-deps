@@ -15,6 +15,9 @@ PYTHON_EXECUTABLE=${PYTHON_PREFIX}/bin/python3
 PATCHELF_SRC_FILE=patchelf-0.9.tar.bz2
 PATCHELF_SRC_MD5=d02687629c7e1698a486a93a0d607947
 PATCHELF_SRC_URL=https://nixos.org/releases/patchelf/patchelf-0.9/patchelf-0.9.tar.bz2
+PATCHELF_SRC_DIR=patchelf-0.9
+PATCHELF_EXECUTABLE=${PATCHELF_SRC_DIR}/src/patchelf
+${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 
 #QT_SRC_FILE=qt-everywhere-src-5.12.1.tar.xz
 #QT_SRC_MD5=6a37466c8c40e87d4a19c3f286ec2542
@@ -59,7 +62,7 @@ define download_extract
 	tar -xf "$2"
 endef
 
-${PYTHON_SRC_DIR} ${QT_BIN_DIR}:
+${PYTHON_SRC_DIR} ${QT_BIN_DIR} ${PATCHELF_SRC_DIR}:
 	@echo ""
 	@echo "#########################"
 	@echo "# Downloading ${$@_target}"
@@ -70,7 +73,7 @@ ${PYTHON_SRC_DIR} ${QT_BIN_DIR}:
 
 # Python
 
-python: ${PYTHON_SRC_DIR}
+python: ${PYTHON_SRC_DIR} patchelf
 	@echo ""
 	@echo "#########################"
 	@echo "# Building Python       #"
@@ -80,6 +83,13 @@ python: ${PYTHON_SRC_DIR}
 	cd "${PYTHON_SRC_DIR}" && ./configure --enable-shared --prefix="${PYTHON_PREFIX}"
 	make -C "${PYTHON_SRC_DIR}" -j${BUILD_THREADS} > /dev/null
 	make -C "${PYTHON_SRC_DIR}" install > /dev/null
+
+	for lib in "${PYTHON_PREFIX}/lib/python3.6/lib-dynload"/*.so ; do \
+		echo "  patching $$lib" && \
+		"${PATCHELF_EXECUTABLE}" --set-rpath '$$ORIGIN/../..' "$$lib" || exit 1 ; \
+	done
+
+
 	
 .PHONY: clean-python
 clean-python:
@@ -89,6 +99,16 @@ clean-python:
 .PHONY: distclean-python
 distclean-python: clean-python
 	rm -rf "${PYTHON_PREFIX}"
+
+
+# patchelf
+
+${PATCHELF_EXECUTABLE}: ${PATCHELF_SRC_DIR}
+	cd "${PATCHELF_SRC_DIR}" && ./configure
+	make -C "${PATCHELF_SRC_DIR}" -j${BUILD_THREADS} > /dev/null
+
+.PHONY: patchelf
+patchelf: ${PATCHELF_EXECUTABLE}
 
 
 # Qt
