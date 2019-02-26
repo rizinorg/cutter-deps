@@ -49,10 +49,10 @@ export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:$
 all: python qt pyside relocate.sh pkg
 
 .PHONY: clean
-clean: clean-python clean-qt clean-pyside clean-relocate.sh
+clean: clean-python clean-qt clean-pyside clean-relocate.sh clean-patchelf
 
 .PHONY: distclean
-distclean: distclean-python distclean-qt distclean-pyside distclean-pkg clean-relocate.sh
+distclean: distclean-python distclean-qt distclean-pyside distclean-pkg clean-relocate.sh distclean-patchelf
 
 # Download Targets
 
@@ -109,6 +109,13 @@ ${PATCHELF_EXECUTABLE}: ${PATCHELF_SRC_DIR}
 
 .PHONY: patchelf
 patchelf: ${PATCHELF_EXECUTABLE}
+
+.PHONY: clean-patchelf
+clean-patchelf:
+	rm -f "${PATCHELF_SRC_FILE}"
+	rm -rf "${PATCHELF_SRC_DIR}"
+
+distclean-patchelf: clean-patchelf
 
 
 # Qt
