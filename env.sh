@@ -7,7 +7,7 @@ export CUTTER_DEPS_PYTHON_PREFIX="$CUTTER_DEPS_ROOT/python"
 export LD_LIBRARY_PATH="$CUTTER_DEPS_ROOT/qt/lib:$CUTTER_DEPS_ROOT/python/lib:$CUTTER_DEPS_ROOT/pyside/lib:$LD_LIBRARY_PATH"
 export PATH="$CUTTER_DEPS_ROOT/qt/bin:$CUTTER_DEPS_ROOT/python/bin:$CUTTER_DEPS_ROOT/pyside/bin:$PATH"
 
-export PKG_CONFIG_PATH="$CUTTER_DEPS_ROOT/qt/lib/pkgconfig:$CUTTER_DEPS_ROOT/python/lib/pkgconfig:$CUTTER_DEPS_ROOT/pyside/lib/pkgconfig"
+export PKG_CONFIG_PATH="$CUTTER_DEPS_ROOT/qt/lib/pkgconfig:$CUTTER_DEPS_ROOT/python/lib/pkgconfig:$CUTTER_DEPS_ROOT/pyside/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 # For QMake
 export QTDIR="$CUTTER_DEPS_ROOT/qt"
