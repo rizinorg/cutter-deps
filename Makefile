@@ -1,6 +1,22 @@
 
 ROOT_DIR=${CURDIR}
 
+PLATFORMS_SUPPORTED=win linux macos
+ifeq (${OS},Windows_NT)
+  PLATFORM:=win
+else
+  UNAME_S=${shell uname -s}
+  ifeq (${UNAME_S},Linux)
+    PLATFORM:=linux
+  endif
+  ifeq (${UNAME_S},Darwin)
+    PLATFORM:=macos
+  endif
+endif
+ifeq ($(filter ${PLATFORM},${PLATFORMS_SUPPORTED}),)
+  ${error Platform not detected or unsupported.}
+endif
+
 PYTHON_SRC_FILE=Python-3.6.4.tar.xz
 PYTHON_SRC_MD5=1325134dd525b4a2c3272a1a0214dd54
 PYTHON_SRC_URL=https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tar.xz
@@ -24,8 +40,11 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 #QT_SRC_URL=https://download.qt.io/official_releases/qt/5.12/5.12.1/single/qt-everywhere-src-5.12.1.tar.xz
 
 QT_BIN_FILE=cutter-deps-qt.tar.gz
-QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v4/cutter-deps-qt.tar.gz
-QT_BIN_MD5=b47f52d4cbf6106abfd8b294211eabca
+QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/test/cutter-deps-qt-${PLATFORM}.tar.gz
+QT_BIN_MD5_linux=fa5258ea6baf6c298c420eaed4cfe3ed
+QT_BIN_MD5_macos=4d7c39d3d97c27412db29dcd8bf7f330
+QT_BIN_MD5_win=TODO
+QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
 QT_PREFIX=${ROOT_DIR}/${QT_BIN_DIR}
 ${QT_BIN_DIR}_target=QT_BIN
@@ -56,9 +75,24 @@ distclean: distclean-python distclean-qt distclean-pyside distclean-pkg clean-re
 
 # Download Targets
 
+ifeq (${PLATFORM},macos)
+  define check_md5
+        if [ "`md5 -r \"$1\"`" != "$2 $1" ]; then \
+                echo "MD5 mismatch for file $1"; \
+                exit 1; \
+        else \
+                echo "$1 OK"; \
+        fi
+  endef
+else
+  define check_md5
+        echo "$2 $1" | md5sum -c -
+  endef
+endif
+
 define download_extract
 	curl -L "$1" -o "$2"
-	echo "$3 $2" | md5sum -c -
+	${call check_md5,$2,$3}
 	tar -xf "$2"
 endef
 
