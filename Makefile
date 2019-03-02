@@ -65,13 +65,23 @@ BUILD_THREADS=4
 LLVM_LIBDIR=$(shell llvm-config --libdir)
 export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${LD_LIBRARY_PATH}
 
+ifeq (${PLATFORM},linux)
+  PATCHELF_TARGET=patchelf
+  PATCHELF_TARGET_CLEAN=clean-patchelf
+  PATCHELF_TARGET_DISTCLEAN=distclean_patchelf
+else#
+  PATCHELF_TARGET=
+  PATCHELF_TARGET_CLEAN=
+  PATCHELF_TARGET_DISTCLEAN=
+endif
+
 all: python qt pyside relocate.sh pkg
 
 .PHONY: clean
-clean: clean-python clean-qt clean-pyside clean-relocate.sh clean-patchelf
+clean: clean-python clean-qt clean-pyside clean-relocate.sh ${PATCHELF_TARGET_CLEAN}
 
 .PHONY: distclean
-distclean: distclean-python distclean-qt distclean-pyside distclean-pkg clean-relocate.sh distclean-patchelf
+distclean: distclean-python distclean-qt distclean-pyside distclean-pkg clean-relocate.sh ${PATCHELF_TARGET_DISTCLEAN}
 
 # Download Targets
 
@@ -107,21 +117,38 @@ ${PYTHON_SRC_DIR} ${QT_BIN_DIR} ${PATCHELF_SRC_DIR}:
 
 # Python
 
-python: ${PYTHON_SRC_DIR} patchelf
+python: ${PYTHON_SRC_DIR} ${PATCHELF_TARGET}
 	@echo ""
 	@echo "#########################"
 	@echo "# Building Python       #"
 	@echo "#########################"
 	@echo ""
 
+ifeq (${PLATFORM},macos)
+	cd "${PYTHON_SRC_DIR}" && \
+		CPPFLAGS="-I$(shell brew --prefix openssl)/include" \
+		 LDFLAGS="-L$(shell brew --prefix openssl)/lib" \
+		./configure --enable-framework="${PYTHON_PREFIX}"
+	# Patch for https://github.com/radareorg/cutter/issues/424
+	sed -i ".original" "s/#define HAVE_GETENTROPY 1/#define HAVE_GETENTROPY 0/" "${PYTHON_SRC_DIR}/pyconfig.h"
+else
 	cd "${PYTHON_SRC_DIR}" && ./configure --enable-shared --prefix="${PYTHON_PREFIX}"
-	make -C "${PYTHON_SRC_DIR}" -j${BUILD_THREADS} > /dev/null
-	make -C "${PYTHON_SRC_DIR}" install > /dev/null
+endif
 
+	make -C "${PYTHON_SRC_DIR}" -j${BUILD_THREADS} > /dev/null
+
+ifeq (${PLATFORM},macos)
+	make -C "${PYTHON_SRC_DIR}" frameworkinstallframework" > /dev/null
+else
+	make -C "${PYTHON_SRC_DIR}" install > /dev/null
+endif
+
+ifeq (${PLATFORM},linux)
 	for lib in "${PYTHON_PREFIX}/lib/python3.6/lib-dynload"/*.so ; do \
 		echo "  patching $$lib" && \
 		"${PATCHELF_EXECUTABLE}" --set-rpath '$$ORIGIN/../..' "$$lib" || exit 1 ; \
 	done
+endif
 
 
 	
@@ -137,6 +164,8 @@ distclean-python: clean-python
 
 # patchelf
 
+ifeq (${PLATFORM},linux)
+
 ${PATCHELF_EXECUTABLE}: ${PATCHELF_SRC_DIR}
 	cd "${PATCHELF_SRC_DIR}" && ./configure
 	make -C "${PATCHELF_SRC_DIR}" -j${BUILD_THREADS} > /dev/null
@@ -151,6 +180,7 @@ clean-patchelf:
 
 distclean-patchelf: clean-patchelf
 
+endif
 
 # Qt
 
