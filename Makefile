@@ -63,7 +63,7 @@ PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.1
 #PYSIDE_SRC_GIT_COMMIT=7a7952fc2e0809ef7f12a726376cec457897c364
 PYSIDE_PREFIX=${ROOT_DIR}/pyside
 
-PACKAGE_FILE=cutter-deps.tar.gz
+PACKAGE_FILE=cutter-deps-${PLATFORM}.tar.gz
 
 BUILD_THREADS=4
 
