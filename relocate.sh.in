@@ -3,14 +3,22 @@ CURRENT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd "$CURRENT_ROOT"
 
-REPLACE_FILES="pyside/lib/cmake/**/*.cmake pyside/lib/pkgconfig/*.pc qt/lib/pkgconfig/*.pc python/lib/pkgconfig/*.pc"
+if [ "${PLATFORM}" == "macos" ]; then
+	REPLACE_FILES="pyside/lib/cmake/**/*.cmake pyside/lib/pkgconfig/*.pc qt/lib/pkgconfig/*.pc python/lib/pkgconfig/*.pc"
+else
+	REPLACE_FILES="pyside/lib/cmake/**/*.cmake pyside/lib/pkgconfig/*.pc qt/lib/pkgconfig/*.pc python/Python.framework/Versions/Current/lib/pkgconfig/*.pc"
+fi
 
 ORIGINAL_ROOT_ESCAPED="${ORIGINAL_ROOT//'/'/$'\\/'}"
 CURRENT_ROOT_ESCAPED="${CURRENT_ROOT//'/'/$'\\/'}"
 
 for file in $REPLACE_FILES; do
 	echo "Relocating $file"
-	sed -i -e "s/$ORIGINAL_ROOT_ESCAPED/$CURRENT_ROOT_ESCAPED/g" "$file"
+	if [ "${PLATFORM}" == "macos" ]; then
+		sed -i"s/$ORIGINAL_ROOT_ESCAPED/$CURRENT_ROOT_ESCAPED/g" -e "$file"
+	else
+		sed -i -e "s/$ORIGINAL_ROOT_ESCAPED/$CURRENT_ROOT_ESCAPED/g" "$file"
+	fi
 done
 
 echo "[Paths]

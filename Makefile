@@ -90,10 +90,10 @@ endif
 all: python qt pyside relocate.sh pkg
 
 .PHONY: clean
-clean: clean-python clean-qt clean-pyside clean-relocate.sh ${PATCHELF_TARGET_CLEAN}
+clean: clean-python clean-qt clean-pyside clean-relocate.sh clean-env.sh ${PATCHELF_TARGET_CLEAN}
 
 .PHONY: distclean
-distclean: distclean-python distclean-qt distclean-pyside distclean-pkg clean-relocate.sh ${PATCHELF_TARGET_DISTCLEAN}
+distclean: distclean-python distclean-qt distclean-pyside distclean-pkg clean-relocate.sh clean-env.sh ${PATCHELF_TARGET_DISTCLEAN}
 
 # Download Targets
 
@@ -290,7 +290,7 @@ distclean-pyside: clean-pyside
 # Relocation script
 
 relocate.sh: relocate.sh.in
-	printf "#!/bin/bash\n\nORIGINAL_ROOT=\"${ROOT_DIR}\"\n" > relocate.sh
+	printf "#!/bin/bash\n\nORIGINAL_ROOT=\"${ROOT_DIR}\"\nPLATFORM=${PLATFORM}" > relocate.sh
 	cat relocate.sh.in >> relocate.sh
 	chmod +x relocate.sh
 
@@ -298,9 +298,20 @@ relocate.sh: relocate.sh.in
 clean-relocate.sh:
 	rm -f relocate.sh
 
+# Environment script
+
+env.sh: env.sh.in
+	printf "#!/bin/bash\n\nPLATFORM=${PLATFORM}\n" > env.sh
+	cat env.sh.in >> env.sh
+	chmod +x env.sh
+
+.PHONY: clean-env.sh
+clean-env.sh:
+	rm -f env.sh
+
 # Package
 
-${PACKAGE_FILE}: python qt pyside relocate.sh
+${PACKAGE_FILE}: python qt pyside relocate.sh env.sh
 	tar -czf "${PACKAGE_FILE}" qt python pyside relocate.sh env.sh
 
 .PHONY: pkg
