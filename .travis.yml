@@ -8,6 +8,13 @@ matrix:
   - os: osx
     env: DEPLOY_FILE=cutter-deps-linux.tar.gz
 
+addons:
+  homebrew:
+    packages:
+    - llvm
+
+install: if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH=/usr/local/opt/llvm/bin:$PATH; fi
+
 script: make
 
 deploy:
