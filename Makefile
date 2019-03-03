@@ -21,7 +21,12 @@ PYTHON_SRC_FILE=Python-3.6.4.tar.xz
 PYTHON_SRC_MD5=1325134dd525b4a2c3272a1a0214dd54
 PYTHON_SRC_URL=https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tar.xz
 PYTHON_SRC_DIR=Python-3.6.4
-PYTHON_PREFIX=${ROOT_DIR}/python
+ifeq (${PLATFORM},macos)
+  PYTHON_FRAMEWORK=${ROOT_DIR}/python/Python.framework
+  PYTHON_PREFIX=${PYTHON_FRAMEWORK}/Versions/Current
+else
+  PYTHON_PREFIX=${ROOT_DIR}/python
+endif
 ${PYTHON_SRC_DIR}_target=PYTHON_SRC
 PYTHON_LIBRARY=${PYTHON_PREFIX}/lib/libpython3.so
 PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python3.6m
@@ -63,7 +68,14 @@ PACKAGE_FILE=cutter-deps.tar.gz
 BUILD_THREADS=4
 
 LLVM_LIBDIR=$(shell llvm-config --libdir)
-export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${LD_LIBRARY_PATH}
+
+ifeq (${PLATFORM},linux)
+  export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${LD_LIBRARY_PATH}
+endif
+ifeq (${PLATFORM},macos)
+ export DYLD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${DYLD_LIBRARY_PATH}
+ export DYLD_FRAMEWORK_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${DYLD_FRAMEWORK_PATH}
+endif
 
 ifeq (${PLATFORM},linux)
   PATCHELF_TARGET=patchelf
@@ -87,7 +99,8 @@ distclean: distclean-python distclean-qt distclean-pyside distclean-pkg clean-re
 
 ifeq (${PLATFORM},macos)
   define check_md5
-        if [ "`md5 -r \"$1\"`" != "$2 $1" ]; then \
+	@echo "Checking MD5 for $1"
+        @if [ "`md5 -r \"$1\"`" != "$2 $1" ]; then \
                 echo "MD5 mismatch for file $1"; \
                 exit 1; \
         else \
@@ -128,7 +141,7 @@ ifeq (${PLATFORM},macos)
 	cd "${PYTHON_SRC_DIR}" && \
 		CPPFLAGS="-I$(shell brew --prefix openssl)/include" \
 		 LDFLAGS="-L$(shell brew --prefix openssl)/lib" \
-		./configure --enable-framework="${PYTHON_PREFIX}"
+		./configure --enable-framework="${ROOT_DIR}/python"
 	# Patch for https://github.com/radareorg/cutter/issues/424
 	sed -i ".original" "s/#define HAVE_GETENTROPY 1/#define HAVE_GETENTROPY 0/" "${PYTHON_SRC_DIR}/pyconfig.h"
 else
@@ -138,7 +151,7 @@ endif
 	make -C "${PYTHON_SRC_DIR}" -j${BUILD_THREADS} > /dev/null
 
 ifeq (${PLATFORM},macos)
-	make -C "${PYTHON_SRC_DIR}" frameworkinstallframework" > /dev/null
+	make -C "${PYTHON_SRC_DIR}" frameworkinstallframework > /dev/null
 else
 	make -C "${PYTHON_SRC_DIR}" install > /dev/null
 endif
@@ -239,6 +252,10 @@ pyside: python qt ${PYSIDE_SRC_DIR}
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" -j${BUILD_THREADS} > /dev/null
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" install > /dev/null
 
+ifeq (${PLATFORM},macos)
+	install_name_tool -add_rpath @executable_path/../../qt/lib "${PYSIDE_PREFIX}/bin/shiboken2"
+endif
+
 	@echo ""
 	@echo "#########################"
 	@echo "# Building PySide2      #"
@@ -258,8 +275,8 @@ pyside: python qt ${PYSIDE_SRC_DIR}
 		-DCMAKE_BUILD_TYPE=Release \
 		-DMODULES="Core;Gui;Widgets" \
 		../../sources/pyside2
-	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j${BUILD_THREADS} > /dev/null
-	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install > /dev/null
+	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j${BUILD_THREADS}
+	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install
 
 .PHONY: clean-pyside
 clean-pyside:

@@ -1,6 +1,13 @@
 language: c
 dist: xenial
 
+matrix:
+  include:
+  - os: linux
+    env: DEPLOY_FILE=cutter-deps-linux.tar.gz
+  - os: osx
+    env: DEPLOY_FILE=cutter-deps-linux.tar.gz
+
 script: make
 
 deploy:
