@@ -45,9 +45,9 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 #QT_SRC_URL=https://download.qt.io/official_releases/qt/5.12/5.12.1/single/qt-everywhere-src-5.12.1.tar.xz
 
 QT_BIN_FILE=cutter-deps-qt.tar.gz
-QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/test/cutter-deps-qt-${PLATFORM}.tar.gz
-QT_BIN_MD5_linux=fa5258ea6baf6c298c420eaed4cfe3ed
-QT_BIN_MD5_macos=4d7c39d3d97c27412db29dcd8bf7f330
+QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v5/cutter-deps-qt-${PLATFORM}.tar.gz
+QT_BIN_MD5_linux=5fca6c7a38d71b041860ffed7289e692
+QT_BIN_MD5_macos=95d8a9b8cabc7d5c1b75ae4dc959a178
 QT_BIN_MD5_win=TODO
 QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
