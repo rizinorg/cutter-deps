@@ -38,7 +38,7 @@ for platform in platforms:
 		print(f"Failed to download {platform_url}, skipping.")
 		continue
 
-	md5sum = re.fullmatch("([a-zA-Z0-9]+)( -)?\n?", md5sum).group(1)
+	md5sum = re.fullmatch("([a-zA-Z0-9]+)( +-)?\n?", md5sum).group(1)
 
 	print(f"MD5: {md5sum}")
 	makefile = re.sub(f"^QT_BIN_MD5_{platform}.*$", f"QT_BIN_MD5_{platform}={md5sum}".replace("\\", r"\\"), makefile, flags=re.MULTILINE)

@@ -46,7 +46,7 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 
 QT_BIN_FILE=cutter-deps-qt.tar.gz
 QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v5/cutter-deps-qt-${PLATFORM}.tar.gz
-QT_BIN_MD5_linux=5fca6c7a38d71b041860ffed7289e692
+QT_BIN_MD5_linux=4155bfd8299eea3a0eacb1542419eee8
 QT_BIN_MD5_macos=95d8a9b8cabc7d5c1b75ae4dc959a178
 QT_BIN_MD5_win=TODO
 QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
