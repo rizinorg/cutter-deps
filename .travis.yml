@@ -1,6 +1,8 @@
 language: c
 dist: xenial
 
+cache: ccache
+
 matrix:
   include:
   - os: linux
@@ -12,6 +14,7 @@ addons:
   homebrew:
     packages:
     - llvm
+    - ccache
 
 install: if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH=/usr/local/opt/llvm/bin:$PATH; fi
 
