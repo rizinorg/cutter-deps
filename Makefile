@@ -130,6 +130,15 @@ ${PYTHON_SRC_DIR} ${QT_BIN_DIR} ${PATCHELF_SRC_DIR}:
 
 # Python
 
+ifeq (${PLATFORM},macos)
+define macos_fix_python_lib_path
+	ORIGINAL_PERMS=$$(stat -f "%OLp" "$1") && \
+	chmod +w "$1" && \
+	install_name_tool -change `otool -L "$1" | sed -n "s/^[[:blank:]]*\([^[:blank:]]*Python\) (.*$$/\1/p"` "$2" "$1" && \
+	chmod "$$ORIGINAL_PERMS" "$1"
+endef
+endif
+
 python: ${PYTHON_SRC_DIR} ${PATCHELF_TARGET}
 	@echo ""
 	@echo "#########################"
@@ -161,6 +170,12 @@ ifeq (${PLATFORM},linux)
 		echo "  patching $$lib" && \
 		"${PATCHELF_EXECUTABLE}" --set-rpath '$$ORIGIN/../..' "$$lib" || exit 1 ; \
 	done
+endif
+
+ifeq (${PLATFORM},macos)
+	${call macos_fix_python_lib_path,${PYTHON_PREFIX}/bin/python3,@executable_path/../Python}
+	${call macos_fix_python_lib_path,${PYTHON_PREFIX}/Python,@executable_path/Python}
+	${call macos_fix_python_lib_path,${PYTHON_PREFIX}/Resources/Python.app/Contents/MacOS/Python,@executable_path/../../../../Python}
 endif
 
 
