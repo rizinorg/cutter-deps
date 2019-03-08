@@ -187,7 +187,7 @@ clean-python:
 
 .PHONY: distclean-python
 distclean-python: clean-python
-	rm -rf "${PYTHON_PREFIX}"
+	rm -rf python
 
 
 # patchelf
