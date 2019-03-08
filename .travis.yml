@@ -1,5 +1,6 @@
 language: c
 dist: xenial
+osx_image: xcode10.1
 
 cache: ccache
 
