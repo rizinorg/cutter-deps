@@ -1,0 +1,25 @@
+image: 'Visual Studio 2017'
+
+# Build configuration
+configuration:
+  - Release
+
+build_script:
+  - tree C:\msys64
+  - C:\msys64\bin\make
+
+# Artifacts
+#artifacts:
+#  - path: "cutter-deps-windows.zip"
+#
+#deploy:
+#  description: 'cutter-deps'
+#  provider: GitHub
+#  auth_token:
+#    secure: 
+#  artifact: "%ARTIFACT_NAME%"
+#  draft: false
+#  prerelease: true
+#  on:
+#    appveyor_repo_tag: true
+#

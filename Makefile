@@ -51,7 +51,7 @@ QT_BIN_MD5_macos=ce6fb691b82dabf84a4bbbb4da780afd
 QT_BIN_MD5_win=TODO
 QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
-QT_PREFIX=${ROOT_DIR}/${QT_BIN_DIR}
+QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
 ${QT_BIN_DIR}_target=QT_BIN
 
 PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.1.tar.xz
