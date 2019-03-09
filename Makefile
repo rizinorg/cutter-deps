@@ -78,9 +78,9 @@ ifeq (${PLATFORM},macos)
 endif
 
 ifeq (${PLATFORM},linux)
-  PATCHELF_TARGET=patchelf
+  PATCHELF_TARGET=${PATCHELF_EXECUTABLE}
   PATCHELF_TARGET_CLEAN=clean-patchelf
-  PATCHELF_TARGET_DISTCLEAN=distclean_patchelf
+  PATCHELF_TARGET_DISTCLEAN=distclean-patchelf
 else#
   PATCHELF_TARGET=
   PATCHELF_TARGET_CLEAN=
