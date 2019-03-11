@@ -8,7 +8,7 @@ install:
   - C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm make"
 
 build_script:
-  - C:\msys64\usr\bin\bash -lc "cd %APPVEYOR_BUILD_FOLDER && pwd && ls && make"
+  - C:\msys64\usr\bin\bash -lc "cd %APPVEYOR_BUILD_FOLDER% && pwd && ls && make"
 
 
 # Artifacts
