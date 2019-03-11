@@ -1,13 +1,15 @@
 image: 'Visual Studio 2017'
 
-#test
-
 # Build configuration
 configuration:
   - Release
 
+install:
+  - C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm make"
+
 build_script:
-  - pacman -Sy
+  - C:\msys64\usr\bin\bash -lc "make"
+
 
 # Artifacts
 #artifacts:
