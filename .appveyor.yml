@@ -5,11 +5,9 @@ configuration:
   - Release
 
 build_script:
-  - ls "C:\Python36-x64"
-  - ls "C:\Python36-x64\lib"
-  - ls "C:\Python36-x64\libs"
+  - call C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat x64
   - C:\msys64\usr\bin\bash -lc "cd \"%APPVEYOR_BUILD_FOLDER%\" &&
-    powershell -Command \"echo powershell test\""
+    make PYTHON_WINDOWS=\"C:\Python36-x64\" QT_PREFIX=\"C:\Qt\5.12.1\msvc2017_64\""
 
 
 # Artifacts

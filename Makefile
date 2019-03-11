@@ -17,20 +17,32 @@ ifeq ($(filter ${PLATFORM},${PLATFORMS_SUPPORTED}),)
   ${error Platform not detected or unsupported.}
 endif
 
+PKG_FILES=pyside relocate.sh env.sh
+
+ifeq (${PYTHON_WINDOWS},)
 PYTHON_SRC_FILE=Python-3.6.4.tar.xz
 PYTHON_SRC_MD5=1325134dd525b4a2c3272a1a0214dd54
 PYTHON_SRC_URL=https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tar.xz
 PYTHON_SRC_DIR=Python-3.6.4
+PYTHON_DEPS=python
+PKG_FILES+=python
 ifeq (${PLATFORM},macos)
   PYTHON_FRAMEWORK=${ROOT_DIR}/python/Python.framework
   PYTHON_PREFIX=${PYTHON_FRAMEWORK}/Versions/Current
 else
-  PYTHON_PREFIX=${ROOT_DIR}/python
+  PYTHON_PREFIX:=${ROOT_DIR}/python
 endif
 ${PYTHON_SRC_DIR}_target=PYTHON_SRC
 PYTHON_LIBRARY=${PYTHON_PREFIX}/lib/libpython3.so
 PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python3.6m
 PYTHON_EXECUTABLE=${PYTHON_PREFIX}/bin/python3
+else
+PYTHON_PREFIX=${PYTHON_WINDOWS}
+PYTHON_LIBRARY=${PYTHON_WINDOWS}/libs/python3.lib
+PYTHON_INCLUDE_DIR=${PYTHON_WINDOWS}/include
+PYTHON_EXECUTABLE=${PYTHON_WINDOWS}/python.exe
+PYTHON_DEPS=
+endif
 
 
 PATCHELF_SRC_FILE=patchelf-0.9.tar.bz2
@@ -44,6 +56,7 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 #QT_SRC_MD5=6a37466c8c40e87d4a19c3f286ec2542
 #QT_SRC_URL=https://download.qt.io/official_releases/qt/5.12/5.12.1/single/qt-everywhere-src-5.12.1.tar.xz
 
+ifeq (${QT_PREFIX},)
 QT_BIN_FILE=cutter-deps-qt.tar.gz
 QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v7/cutter-deps-qt-${PLATFORM}.tar.gz
 QT_BIN_MD5_linux=c262bc39d9d07c75c6e8c42147e46760
@@ -53,6 +66,13 @@ QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
 QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
 ${QT_BIN_DIR}_target=QT_BIN
+QT_DEPS=qt
+PKG_FILES+=qt
+QT_OPENGL_ENABLED=0
+else
+QT_OPENGL_ENABLED:=1
+QT_DEPS=
+endif
 
 PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.1.tar.xz
 PYSIDE_SRC_MD5=c247fc1de38929d81aedd1c93d629d9e
@@ -87,7 +107,7 @@ else#
   PATCHELF_TARGET_DISTCLEAN=
 endif
 
-all: python qt pyside relocate.sh pkg
+all: ${PYTHON_DEPS} ${QT_DEPS} pyside relocate.sh pkg
 
 .PHONY: clean
 clean: clean-python clean-qt clean-pyside clean-relocate.sh clean-env.sh ${PATCHELF_TARGET_CLEAN}
@@ -240,11 +260,13 @@ ${PYSIDE_SRC_DIR}:
 	# Patch to prevent complete overriding of LD_LIBRARY_PATH
 	#patch "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/PySideModules.cmake" patch/pyside2-PySideModules.cmake.patch
 
+ifeq(${QT_OPENGL_ENABLED},1)
 	# Patches to remove OpenGL-related source files.
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtGui/CMakeLists.txt" patch/pyside-5.12.1/QtGui-CMakeLists.txt.patch
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtWidgets/CMakeLists.txt" patch/pyside-5.12.1/QtWidgets-CMakeLists.txt.patch
+endif
 
-pyside: python qt ${PYSIDE_SRC_DIR}
+pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 	@echo ""
 	@echo "#########################"
 	@echo "# Building Shiboken2    #"
@@ -326,8 +348,8 @@ clean-env.sh:
 
 # Package
 
-${PACKAGE_FILE}: python qt pyside relocate.sh env.sh
-	tar -czf "${PACKAGE_FILE}" qt python pyside relocate.sh env.sh
+${PACKAGE_FILE}: ${PKG_FILES}
+	tar -czf "${PACKAGE_FILE}" ${PKG_FILES}
 
 .PHONY: pkg
 pkg: ${PACKAGE_FILE}
