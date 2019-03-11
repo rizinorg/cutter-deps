@@ -5,10 +5,10 @@ configuration:
   - Release
 
 install:
-  - C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm make"
+  - C:\msys64\usr\bin\bash -c "pacman -S --noconfirm make"
 
 build_script:
-  - C:\msys64\usr\bin\bash -lc "make"
+  - C:\msys64\usr\bin\bash -c "make"
 
 
 # Artifacts
