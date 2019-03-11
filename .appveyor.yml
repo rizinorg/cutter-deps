@@ -1,5 +1,7 @@
 image: 'Visual Studio 2017'
 
+#test
+
 # Build configuration
 configuration:
   - Release
