@@ -5,8 +5,7 @@ configuration:
   - Release
 
 build_script:
-  - tree C:\msys64
-  - C:\msys64\bin\make
+  - pacman -Sy
 
 # Artifacts
 #artifacts:
