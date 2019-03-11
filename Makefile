@@ -260,7 +260,7 @@ ${PYSIDE_SRC_DIR}:
 	# Patch to prevent complete overriding of LD_LIBRARY_PATH
 	#patch "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/PySideModules.cmake" patch/pyside2-PySideModules.cmake.patch
 
-ifeq(${QT_OPENGL_ENABLED},1)
+ifeq (${QT_OPENGL_ENABLED},1)
 	# Patches to remove OpenGL-related source files.
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtGui/CMakeLists.txt" patch/pyside-5.12.1/QtGui-CMakeLists.txt.patch
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtWidgets/CMakeLists.txt" patch/pyside-5.12.1/QtWidgets-CMakeLists.txt.patch
