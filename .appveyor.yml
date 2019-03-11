@@ -7,6 +7,7 @@ configuration:
 build_script:
   - ls "C:\Python36-x64"
   - ls "C:\Python36-x64\lib"
+  - ls "C:\Python36-x64\libs"
   - C:\msys64\usr\bin\bash -lc "cd \"%APPVEYOR_BUILD_FOLDER%\" &&
     powershell -Command \"echo powershell test\""
 
