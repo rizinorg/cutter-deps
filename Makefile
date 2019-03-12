@@ -241,6 +241,13 @@ distclean-qt: clean-qt
 
 # Shiboken2 + PySide2
 
+ifneq (${LLVM_PREFIX},)
+  LLVM_CMAKE_ARG=-DLLVM_INSTALL_DIR="${LLVM_PREFIX}"
+else
+  LLVM_CMAKE_ARG=
+endif
+
+
 ${PYSIDE_SRC_DIR}:
 	@echo ""
 	@echo "#########################"
@@ -274,12 +281,6 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 	@echo ""
 
 	echo "${LD_LIBRARY_PATH}"
-
-ifneq (${LLVM_PREFIX},)
-  LLVM_CMAKE_ARG=-DLLVM_INSTALL_DIR="${LLVM_PREFIX}"
-else
-  LLVM_CMAKE_ARG=
-endif
 
 	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken2"
 	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && cmake \
