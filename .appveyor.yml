@@ -5,7 +5,7 @@ configuration:
   - Release
 
 build_script:
-  - ls "C:\Program Files\LLVM\bin"
+  - ls "C:\Program Files\LLVM"
   - llvm-config --prefix
   - llvm-config --version
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
