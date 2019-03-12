@@ -87,14 +87,14 @@ PACKAGE_FILE=cutter-deps-${PLATFORM}.tar.gz
 
 BUILD_THREADS=4
 
-LLVM_LIBDIR=$(shell llvm-config --libdir)
-
 ifeq (${PLATFORM},linux)
+  LLVM_LIBDIR=$(shell llvm-config --libdir)
   export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${LD_LIBRARY_PATH}
 endif
 ifeq (${PLATFORM},macos)
- export DYLD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${DYLD_LIBRARY_PATH}
- export DYLD_FRAMEWORK_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${DYLD_FRAMEWORK_PATH}
+  LLVM_LIBDIR=$(shell llvm-config --libdir)
+  export DYLD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${DYLD_LIBRARY_PATH}
+  export DYLD_FRAMEWORK_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${DYLD_FRAMEWORK_PATH}
 endif
 
 ifeq (${PLATFORM},linux)
@@ -283,6 +283,9 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 		-DPYTHON_LIBRARY="${PYTHON_LIBRARY}" \
 		-DPYTHON_INCLUDE_DIR="${PYTHON_INCLUDE_DIR}" \
 		-DPYTHON_EXECUTABLE="${PYTHON_EXECUTABLE}" \
+ifneq (${LLVM_PREFIX},)
+		-DLLVM_INSTALL_DIR="${LLVM_PREFIX}" \
+endif
 		-DBUILD_TESTS=OFF \
 		-DCMAKE_BUILD_TYPE=Release \
 		../../sources/shiboken2

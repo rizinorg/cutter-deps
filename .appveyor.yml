@@ -5,13 +5,9 @@ configuration:
   - Release
 
 build_script:
-  - ls "C:\Program Files\LLVM"
-  - llvm-config --prefix
-  - llvm-config --version
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
-  - llvm-config --prefix
-  - C:\msys64\usr\bin\bash -lc "llvm-config --version && echo -------- && cd \"%APPVEYOR_BUILD_FOLDER%\" &&
-    make PYTHON_WINDOWS=\"C:\Python36-x64\" QT_PREFIX=\"C:\Qt\5.12.1\msvc2017_64\""
+  - C:\msys64\usr\bin\bash -lc "cd \"%APPVEYOR_BUILD_FOLDER%\" &&
+    make PYTHON_WINDOWS=\"C:\Python36-x64\" QT_PREFIX=\"C:\Qt\5.12.1\msvc2017_64\" LLVM_PREFIX=\"C:\Program Files\LLVM\""
 
 
 # Artifacts
