@@ -241,13 +241,6 @@ distclean-qt: clean-qt
 
 # Shiboken2 + PySide2
 
-ifneq (${LLVM_PREFIX},)
-  LLVM_CMAKE_ARG=-DLLVM_INSTALL_DIR="${LLVM_PREFIX}"
-else
-  LLVM_CMAKE_ARG=
-endif
-
-
 ${PYSIDE_SRC_DIR}:
 	@echo ""
 	@echo "#########################"
@@ -280,8 +273,6 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 	@echo "#########################"
 	@echo ""
 
-	echo "${LD_LIBRARY_PATH}"
-
 	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken2"
 	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && cmake \
 		-DCMAKE_PREFIX_PATH="${QT_PREFIX}" \
@@ -290,7 +281,6 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 		-DPYTHON_LIBRARY="${PYTHON_LIBRARY}" \
 		-DPYTHON_INCLUDE_DIR="${PYTHON_INCLUDE_DIR}" \
 		-DPYTHON_EXECUTABLE="${PYTHON_EXECUTABLE}" \
-		${LLVM_CMAKE_ARG} \
 		-DBUILD_TESTS=OFF \
 		-DCMAKE_BUILD_TYPE=Release \
 		../../sources/shiboken2
@@ -315,7 +305,6 @@ endif
 		-DPYTHON_LIBRARY="${PYTHON_LIBRARY}" \
 		-DPYTHON_INCLUDE_DIR="${PYTHON_INCLUDE_DIR}" \
 		-DPYTHON_EXECUTABLE="${PYTHON_EXECUTABLE}" \
-		${LLVM_CMAKE_ARG} \
 		-DBUILD_TESTS=OFF \
 		-DCMAKE_CXX_FLAGS=-w \
 		-DCMAKE_BUILD_TYPE=Release \
