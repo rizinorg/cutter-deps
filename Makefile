@@ -241,6 +241,12 @@ distclean-qt: clean-qt
 
 # Shiboken2 + PySide2
 
+ifeq (${PLATFORM},win)
+CMAKE_GENERATOR=NMake Makefiles
+else
+CMAKE_GENERATOR=Unix Makefiles
+endif
+
 ${PYSIDE_SRC_DIR}:
 	@echo ""
 	@echo "#########################"
@@ -277,6 +283,7 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 
 	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken2"
 	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && cmake \
+		-G "${CMAKE_GENERATOR}" \
 		-DCMAKE_PREFIX_PATH="${QT_PREFIX}" \
 		-DCMAKE_INSTALL_PREFIX="${PYSIDE_PREFIX}" \
 		-DUSE_PYTHON_VERSION=3 \
@@ -286,8 +293,14 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 		-DBUILD_TESTS=OFF \
 		-DCMAKE_BUILD_TYPE=Release \
 		../../sources/shiboken2
+
+ifeq (${PLATFORM},win)
+	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && nmake
+	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && nmake install
+else
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" -j${BUILD_THREADS} > /dev/null
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" install > /dev/null
+endif
 
 ifeq (${PLATFORM},macos)
 	install_name_tool -add_rpath @executable_path/../../qt/lib "${PYSIDE_PREFIX}/bin/shiboken2"
@@ -301,6 +314,7 @@ endif
 
 	mkdir -p "${PYSIDE_SRC_DIR}/build/pyside2"
 	cd "${PYSIDE_SRC_DIR}/build/pyside2" && cmake \
+		-G "${CMAKE_GENERATOR}" \
 		-DCMAKE_PREFIX_PATH="${QT_PREFIX};${PYSIDE_PREFIX}" \
 		-DCMAKE_INSTALL_PREFIX="${PYSIDE_PREFIX}" \
 		-DUSE_PYTHON_VERSION=3 \
@@ -312,8 +326,14 @@ endif
 		-DCMAKE_BUILD_TYPE=Release \
 		-DMODULES="Core;Gui;Widgets" \
 		../../sources/pyside2
+
+ifeq (${PLATFORM},win)
+	cd "${PYSIDE_SRC_DIR}/build/pyside2" && nmake
+	cd "${PYSIDE_SRC_DIR}/build/pyside2" && nmake install
+else
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j${BUILD_THREADS}
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install
+endif
 
 .PHONY: clean-pyside
 clean-pyside:
