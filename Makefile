@@ -284,6 +284,8 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken2"
 	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && cmake \
 		-G "${CMAKE_GENERATOR}" \
+		-DCMAKE_CXX_COMPILER=cl \
+		-DCMAKE_C_COMPILER=cl \
 		-DCMAKE_PREFIX_PATH="${QT_PREFIX}" \
 		-DCMAKE_INSTALL_PREFIX="${PYSIDE_PREFIX}" \
 		-DUSE_PYTHON_VERSION=3 \
