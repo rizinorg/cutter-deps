@@ -292,10 +292,11 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 		-DPYTHON_EXECUTABLE="${PYTHON_EXECUTABLE}" \
 		-DBUILD_TESTS=OFF \
 		-DCMAKE_BUILD_TYPE=Release \
+		-DGENERATOR_EXTRA_FLAGS="--debug-level=full" \
 		../../sources/shiboken2
 
 ifeq (${PLATFORM},win)
-	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja
+	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja || "${PYSIDE_SRC_DIR}/build/shiboken2/generator/shiboken2.exe --version"
 	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja install
 else
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" -j${BUILD_THREADS} > /dev/null
