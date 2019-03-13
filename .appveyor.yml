@@ -6,8 +6,11 @@ configuration:
 
 build_script:
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+  - C:\msys64\usr\bin\bash -lc "mkdir ninja && cd ninja && wget https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-win.zip && unzip ninja-win.zip"
   - C:\msys64\usr\bin\bash -lc "cd \"%APPVEYOR_BUILD_FOLDER%\" &&
-    LLVM_INSTALL_DIR=\"C:\Program Files\LLVM\" make PYTHON_WINDOWS=\"C:\Python36-x64\" QT_PREFIX=\"C:\Qt\5.12.1\msvc2017_64\""
+    export PATH=\"$PWD/ninja:$PATH\" &&
+    export LLVM_INSTALL_DIR=\"C:\Program Files\LLVM\" &&
+    make PYTHON_WINDOWS=\"C:\Python36-x64\" QT_PREFIX=\"C:\Qt\5.12.1\msvc2017_64\""
 
 
 # Artifacts

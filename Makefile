@@ -242,7 +242,7 @@ distclean-qt: clean-qt
 # Shiboken2 + PySide2
 
 ifeq (${PLATFORM},win)
-CMAKE_GENERATOR=NMake Makefiles
+CMAKE_GENERATOR=Ninja
 else
 CMAKE_GENERATOR=Unix Makefiles
 endif
@@ -295,8 +295,8 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 		../../sources/shiboken2
 
 ifeq (${PLATFORM},win)
-	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && nmake
-	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && nmake install
+	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja
+	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja install
 else
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" -j${BUILD_THREADS} > /dev/null
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" install > /dev/null
@@ -328,8 +328,8 @@ endif
 		../../sources/pyside2
 
 ifeq (${PLATFORM},win)
-	cd "${PYSIDE_SRC_DIR}/build/pyside2" && nmake
-	cd "${PYSIDE_SRC_DIR}/build/pyside2" && nmake install
+	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja
+	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja install
 else
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j${BUILD_THREADS}
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install
