@@ -296,7 +296,7 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 		../../sources/shiboken2
 
 ifeq (${PLATFORM},win)
-	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja -j 1 || "find ."
+	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja -j 1 || find .; generator/shiboken2.exe --version
 	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja install
 else
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" -j${BUILD_THREADS} > /dev/null
