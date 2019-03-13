@@ -15,3 +15,11 @@ build_script:
     export LLVM_INSTALL_DIR=\"C:\Program Files\LLVM\" &&
     make PYTHON_WINDOWS=\"C:\Python36-x64\" QT_PREFIX=\"C:\Qt\5.12.1\msvc2017_64\""
 
+deploy:
+  description: "cutter-deps"
+  provider: GitHub
+  auth_token:
+    secure: zMlNzVP9WsKDBhzIYyjRrrGwow232C6kivY7zG7Neu9XdbXqbPKFEQbb3XYSGZRQ
+  artifact: cutter-deps-win.tar.gz
+  on:
+    APPVEYOR_REPO_TAG: true
