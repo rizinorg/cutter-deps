@@ -101,10 +101,14 @@ ifeq (${PLATFORM},linux)
   PATCHELF_TARGET=${PATCHELF_EXECUTABLE}
   PATCHELF_TARGET_CLEAN=clean-patchelf
   PATCHELF_TARGET_DISTCLEAN=distclean-patchelf
-else#
+else
   PATCHELF_TARGET=
   PATCHELF_TARGET_CLEAN=
   PATCHELF_TARGET_DISTCLEAN=
+endif
+
+ifneq (${PLATFORM},win)
+  PKG_FILES += env.sh relocate.sh
 endif
 
 all: pkg 
