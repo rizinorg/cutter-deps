@@ -1,25 +1,25 @@
 image: 'Visual Studio 2017'
 
-# Build configuration
 configuration:
   - Release
 
 build_script:
-  - tree C:\msys64
-  - C:\msys64\bin\make
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+  - C:\msys64\usr\bin\bash -lc "
+    mkdir ninja &&
+    cd ninja &&
+    wget https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-win.zip &&
+    7z x ninja-win.zip &&
+    cd \"%APPVEYOR_BUILD_FOLDER%\" &&
+    export PATH=\"$PWD/ninja:/c/Qt/5.12.1/msvc2017_64/bin:$PATH\" &&
+    export LLVM_INSTALL_DIR=\"C:\Program Files\LLVM\" &&
+    make PYTHON_WINDOWS=\"C:\Python36-x64\" QT_PREFIX=\"C:\Qt\5.12.1\msvc2017_64\""
 
-# Artifacts
-#artifacts:
-#  - path: "cutter-deps-windows.zip"
-#
-#deploy:
-#  description: 'cutter-deps'
-#  provider: GitHub
-#  auth_token:
-#    secure: 
-#  artifact: "%ARTIFACT_NAME%"
-#  draft: false
-#  prerelease: true
-#  on:
-#    appveyor_repo_tag: true
-#
+deploy:
+  description: "cutter-deps"
+  provider: GitHub
+  auth_token:
+    secure: zMlNzVP9WsKDBhzIYyjRrrGwow232C6kivY7zG7Neu9XdbXqbPKFEQbb3XYSGZRQ
+  artifact: cutter-deps-win.tar.gz
+  on:
+    APPVEYOR_REPO_TAG: true

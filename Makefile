@@ -17,20 +17,32 @@ ifeq ($(filter ${PLATFORM},${PLATFORMS_SUPPORTED}),)
   ${error Platform not detected or unsupported.}
 endif
 
+PKG_FILES=pyside
+
+ifeq (${PYTHON_WINDOWS},)
 PYTHON_SRC_FILE=Python-3.6.4.tar.xz
 PYTHON_SRC_MD5=1325134dd525b4a2c3272a1a0214dd54
 PYTHON_SRC_URL=https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tar.xz
 PYTHON_SRC_DIR=Python-3.6.4
+PYTHON_DEPS=python
+PKG_FILES+=python
 ifeq (${PLATFORM},macos)
   PYTHON_FRAMEWORK=${ROOT_DIR}/python/Python.framework
   PYTHON_PREFIX=${PYTHON_FRAMEWORK}/Versions/Current
 else
-  PYTHON_PREFIX=${ROOT_DIR}/python
+  PYTHON_PREFIX:=${ROOT_DIR}/python
 endif
 ${PYTHON_SRC_DIR}_target=PYTHON_SRC
 PYTHON_LIBRARY=${PYTHON_PREFIX}/lib/libpython3.so
 PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python3.6m
 PYTHON_EXECUTABLE=${PYTHON_PREFIX}/bin/python3
+else
+PYTHON_PREFIX=${PYTHON_WINDOWS}
+PYTHON_LIBRARY=${PYTHON_WINDOWS}/libs/python36.lib
+PYTHON_INCLUDE_DIR=${PYTHON_WINDOWS}/include
+PYTHON_EXECUTABLE=${PYTHON_WINDOWS}/python.exe
+PYTHON_DEPS=
+endif
 
 
 PATCHELF_SRC_FILE=patchelf-0.9.tar.bz2
@@ -44,6 +56,7 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 #QT_SRC_MD5=6a37466c8c40e87d4a19c3f286ec2542
 #QT_SRC_URL=https://download.qt.io/official_releases/qt/5.12/5.12.1/single/qt-everywhere-src-5.12.1.tar.xz
 
+ifeq (${QT_PREFIX},)
 QT_BIN_FILE=cutter-deps-qt.tar.gz
 QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v7/cutter-deps-qt-${PLATFORM}.tar.gz
 QT_BIN_MD5_linux=c262bc39d9d07c75c6e8c42147e46760
@@ -53,6 +66,13 @@ QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
 QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
 ${QT_BIN_DIR}_target=QT_BIN
+QT_DEPS=qt
+PKG_FILES+=qt
+QT_OPENGL_ENABLED=0
+else
+QT_OPENGL_ENABLED:=1
+QT_DEPS=
+endif
 
 PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.1.tar.xz
 PYSIDE_SRC_MD5=c247fc1de38929d81aedd1c93d629d9e
@@ -67,14 +87,14 @@ PACKAGE_FILE=cutter-deps-${PLATFORM}.tar.gz
 
 BUILD_THREADS=4
 
-LLVM_LIBDIR=$(shell llvm-config --libdir)
-
 ifeq (${PLATFORM},linux)
+  LLVM_LIBDIR=$(shell llvm-config --libdir)
   export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${LD_LIBRARY_PATH}
 endif
 ifeq (${PLATFORM},macos)
- export DYLD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${DYLD_LIBRARY_PATH}
- export DYLD_FRAMEWORK_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${DYLD_FRAMEWORK_PATH}
+  LLVM_LIBDIR=$(shell llvm-config --libdir)
+  export DYLD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${DYLD_LIBRARY_PATH}
+  export DYLD_FRAMEWORK_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${DYLD_FRAMEWORK_PATH}
 endif
 
 ifeq (${PLATFORM},linux)
@@ -87,7 +107,7 @@ else#
   PATCHELF_TARGET_DISTCLEAN=
 endif
 
-all: python qt pyside relocate.sh pkg
+all: pkg 
 
 .PHONY: clean
 clean: clean-python clean-qt clean-pyside clean-relocate.sh clean-env.sh ${PATCHELF_TARGET_CLEAN}
@@ -221,6 +241,12 @@ distclean-qt: clean-qt
 
 # Shiboken2 + PySide2
 
+ifeq (${PLATFORM},win)
+PLATFORM_CMAKE_ARGS=-G Ninja -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl
+else
+PLATFORM_CMAKE_ARGS=
+endif
+
 ${PYSIDE_SRC_DIR}:
 	@echo ""
 	@echo "#########################"
@@ -240,21 +266,24 @@ ${PYSIDE_SRC_DIR}:
 	# Patch to prevent complete overriding of LD_LIBRARY_PATH
 	#patch "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/PySideModules.cmake" patch/pyside2-PySideModules.cmake.patch
 
+ifneq (${QT_OPENGL_ENABLED},1)
 	# Patches to remove OpenGL-related source files.
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtGui/CMakeLists.txt" patch/pyside-5.12.1/QtGui-CMakeLists.txt.patch
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtWidgets/CMakeLists.txt" patch/pyside-5.12.1/QtWidgets-CMakeLists.txt.patch
+endif
 
-pyside: python qt ${PYSIDE_SRC_DIR}
+pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 	@echo ""
 	@echo "#########################"
 	@echo "# Building Shiboken2    #"
 	@echo "#########################"
 	@echo ""
 
-	echo "${LD_LIBRARY_PATH}"
+	echo "$$LLVM_INSTALL_DIR"
 
 	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken2"
 	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && cmake \
+		${PLATFORM_CMAKE_ARGS} \
 		-DCMAKE_PREFIX_PATH="${QT_PREFIX}" \
 		-DCMAKE_INSTALL_PREFIX="${PYSIDE_PREFIX}" \
 		-DUSE_PYTHON_VERSION=3 \
@@ -264,8 +293,14 @@ pyside: python qt ${PYSIDE_SRC_DIR}
 		-DBUILD_TESTS=OFF \
 		-DCMAKE_BUILD_TYPE=Release \
 		../../sources/shiboken2
+
+ifeq (${PLATFORM},win)
+	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja -j ${BUILD_THREADS}
+	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja install
+else
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" -j${BUILD_THREADS} > /dev/null
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" install > /dev/null
+endif
 
 ifeq (${PLATFORM},macos)
 	install_name_tool -add_rpath @executable_path/../../qt/lib "${PYSIDE_PREFIX}/bin/shiboken2"
@@ -279,6 +314,7 @@ endif
 
 	mkdir -p "${PYSIDE_SRC_DIR}/build/pyside2"
 	cd "${PYSIDE_SRC_DIR}/build/pyside2" && cmake \
+		${PLATFORM_CMAKE_ARGS} \
 		-DCMAKE_PREFIX_PATH="${QT_PREFIX};${PYSIDE_PREFIX}" \
 		-DCMAKE_INSTALL_PREFIX="${PYSIDE_PREFIX}" \
 		-DUSE_PYTHON_VERSION=3 \
@@ -290,8 +326,14 @@ endif
 		-DCMAKE_BUILD_TYPE=Release \
 		-DMODULES="Core;Gui;Widgets" \
 		../../sources/pyside2
+
+ifeq (${PLATFORM},win)
+	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja -j ${BUILD_THREADS}
+	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja install
+else
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j${BUILD_THREADS}
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install
+endif
 
 .PHONY: clean-pyside
 clean-pyside:
@@ -326,8 +368,8 @@ clean-env.sh:
 
 # Package
 
-${PACKAGE_FILE}: python qt pyside relocate.sh env.sh
-	tar -czf "${PACKAGE_FILE}" qt python pyside relocate.sh env.sh
+${PACKAGE_FILE}: ${PKG_FILES}
+	tar -czf "${PACKAGE_FILE}" ${PKG_FILES}
 
 .PHONY: pkg
 pkg: ${PACKAGE_FILE}
