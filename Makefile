@@ -273,6 +273,8 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 	@echo "#########################"
 	@echo ""
 
+	echo "$$LLVM_INSTALL_DIR"
+
 	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken2"
 	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && cmake \
 		-DCMAKE_PREFIX_PATH="${QT_PREFIX}" \
