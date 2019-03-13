@@ -17,7 +17,7 @@ ifeq ($(filter ${PLATFORM},${PLATFORMS_SUPPORTED}),)
   ${error Platform not detected or unsupported.}
 endif
 
-PKG_FILES=pyside relocate.sh env.sh
+PKG_FILES=pyside
 
 ifeq (${PYTHON_WINDOWS},)
 PYTHON_SRC_FILE=Python-3.6.4.tar.xz
@@ -107,7 +107,7 @@ else#
   PATCHELF_TARGET_DISTCLEAN=
 endif
 
-all: ${PYTHON_DEPS} ${QT_DEPS} pyside relocate.sh pkg
+all: pkg 
 
 .PHONY: clean
 clean: clean-python clean-qt clean-pyside clean-relocate.sh clean-env.sh ${PATCHELF_TARGET_CLEAN}
