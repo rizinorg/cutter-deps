@@ -5,8 +5,8 @@ configuration:
   - Release
 
 build_script:
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
   - C:\msys64\usr\bin\bash -lc "mkdir ninja && cd ninja && wget https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-win.zip && 7z x ninja-win.zip"
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
   - C:\msys64\usr\bin\bash -lc "cd \"%APPVEYOR_BUILD_FOLDER%\" &&
     export PATH=\"$PWD/ninja:$PATH\" &&
     export LLVM_INSTALL_DIR=\"C:\Program Files\LLVM\" &&
