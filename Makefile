@@ -58,9 +58,9 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 
 ifeq (${QT_PREFIX},)
 QT_BIN_FILE=cutter-deps-qt.tar.gz
-QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v7/cutter-deps-qt-${PLATFORM}.tar.gz
-QT_BIN_MD5_linux=c262bc39d9d07c75c6e8c42147e46760
-QT_BIN_MD5_macos=ce6fb691b82dabf84a4bbbb4da780afd
+QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v8/cutter-deps-qt-${PLATFORM}.tar.gz
+QT_BIN_MD5_linux=63283f310e444c6a8a639c4f33077f93
+QT_BIN_MD5_macos=57342f7f5e2aaa5a418ff296214beb07
 QT_BIN_MD5_win=TODO
 QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
@@ -68,16 +68,16 @@ QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
 ${QT_BIN_DIR}_target=QT_BIN
 QT_DEPS=qt
 PKG_FILES+=qt
-QT_OPENGL_ENABLED=0
+QT_OPENGL_ENABLED=1
 else
 QT_OPENGL_ENABLED:=1
 QT_DEPS=
 endif
 
-PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.1.tar.xz
-PYSIDE_SRC_MD5=c247fc1de38929d81aedd1c93d629d9e
-PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.1-src/pyside-setup-everywhere-src-5.12.1.tar.xz
-PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.1
+PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.3.tar.xz
+PYSIDE_SRC_MD5=8f2026cf831936b15069cb3169f96fbf
+PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.3-src/pyside-setup-everywhere-src-5.12.3.tar.xz
+PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.3
 #PYSIDE_SRC_DIR=pyside-src
 #PYSIDE_SRC_GIT=https://code.qt.io/pyside/pyside-setup.git
 #PYSIDE_SRC_GIT_COMMIT=7a7952fc2e0809ef7f12a726376cec457897c364
@@ -264,7 +264,7 @@ ${PYSIDE_SRC_DIR}:
 	
 	# Patch needed, so the PySide2 CMakeLists.txt doesn't search for Qt5UiTools and other stuff,
 	# which would mess up finding the actual modules later.
-	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.12.1/CMakeLists.txt.patch
+	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.12.3/CMakeLists.txt.patch
 	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
 
 	# Patch to prevent complete overriding of LD_LIBRARY_PATH
