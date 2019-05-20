@@ -258,9 +258,6 @@ ${PYSIDE_SRC_DIR}:
 	@echo "#########################"
 	@echo ""
 
-	@echo "LD_LIBRARY_PATH = $${LD_LIBRARY_PATH}"
-	@echo "PYTHON_PREFIX = ${PYTHON_PREFIX}"
-
 	$(call download_extract,${PYSIDE_SRC_URL},${PYSIDE_SRC_FILE},${PYSIDE_SRC_MD5})
 	#git clone "${PYSIDE_SRC_GIT}" "${PYSIDE_SRC_DIR}"
 	#cd "${PYSIDE_SRC_DIR}" && git checkout "${PYSIDE_SRC_GIT_COMMIT}"
@@ -271,7 +268,7 @@ ${PYSIDE_SRC_DIR}:
 	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
 
 	# Patch to prevent complete overriding of LD_LIBRARY_PATH
-	#patch "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/PySideModules.cmake" patch/pyside2-PySideModules.cmake.patch
+	patch "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/PySideModules.cmake" patch/pyside-5.12.3/PySideModules.cmake.patch
 
 ifneq (${QT_OPENGL_ENABLED},1)
 	# Patches to remove OpenGL-related source files.
