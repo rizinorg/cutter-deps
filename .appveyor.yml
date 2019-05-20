@@ -17,7 +17,7 @@ build_script:
     cd \"%APPVEYOR_BUILD_FOLDER%\" &&
     export PATH=\"$PWD/ninja:/c/Qt/5.12.1/msvc2017_64/bin:$PATH\" &&
     export LLVM_INSTALL_DIR=\"C:\Program Files\LLVM\" &&
-    make PYTHON_WINDOWS=\"C:\Python36-x64\" QT_PREFIX=\"C:\Qt\5.12\msvc2017_64\""
+    make PYTHON_WINDOWS=\"C:\Python36-x64\" QT_PREFIX=\"C:\Qt\5.12.1\msvc2017_64\""
 
 artifacts:
   - path: "%ARTIFACT_PATH%"
