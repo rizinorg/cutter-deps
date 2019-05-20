@@ -258,6 +258,9 @@ ${PYSIDE_SRC_DIR}:
 	@echo "#########################"
 	@echo ""
 
+	@echo "LD_LIBRARY_PATH = $${LD_LIBRARY_PATH}"
+	@echo "PYTHON_PREFIX = ${PYTHON_PREFIX}"
+
 	$(call download_extract,${PYSIDE_SRC_URL},${PYSIDE_SRC_FILE},${PYSIDE_SRC_MD5})
 	#git clone "${PYSIDE_SRC_GIT}" "${PYSIDE_SRC_DIR}"
 	#cd "${PYSIDE_SRC_DIR}" && git checkout "${PYSIDE_SRC_GIT_COMMIT}"
