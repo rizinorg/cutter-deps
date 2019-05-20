@@ -22,6 +22,7 @@ addons:
     packages:
     - libgl1-mesa-dev
     - libglu1-mesa-dev
+    - libegl1-mesa-dev
 
 install: if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH=/usr/local/opt/llvm/bin:$PATH; fi
 
