@@ -74,17 +74,10 @@ QT_OPENGL_ENABLED:=1
 QT_DEPS=
 endif
 
-ifeq (${PYTHON_WINDOWS},)
-PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.1.tar.xz
-PYSIDE_SRC_MD5=c247fc1de38929d81aedd1c93d629d9e
-PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.1-src/pyside-setup-everywhere-src-5.12.1.tar.xz
-PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.1
-else
 PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.3.tar.xz
 PYSIDE_SRC_MD5=8f2026cf831936b15069cb3169f96fbf
 PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.3-src/pyside-setup-everywhere-src-5.12.3.tar.xz
 PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.3
-endif
 #PYSIDE_SRC_DIR=pyside-src
 #PYSIDE_SRC_GIT=https://code.qt.io/pyside/pyside-setup.git
 #PYSIDE_SRC_GIT_COMMIT=7a7952fc2e0809ef7f12a726376cec457897c364
@@ -271,13 +264,8 @@ ${PYSIDE_SRC_DIR}:
 	
 	# Patch needed, so the PySide2 CMakeLists.txt doesn't search for Qt5UiTools and other stuff,
 	# which would mess up finding the actual modules later.
-ifeq (${PYTHON_WINDOWS},)
-	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.12.1/CMakeLists.txt.patch
-	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
-else
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.12.3/CMakeLists.txt.patch
 	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
-endif
 
 	# Patch to prevent complete overriding of LD_LIBRARY_PATH
 	#patch "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/PySideModules.cmake" patch/pyside2-PySideModules.cmake.patch
