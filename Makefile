@@ -58,9 +58,9 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 
 ifeq (${QT_PREFIX},)
 QT_BIN_FILE=cutter-deps-qt.tar.gz
-QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v8/cutter-deps-qt-${PLATFORM}.tar.gz
-QT_BIN_MD5_linux=63283f310e444c6a8a639c4f33077f93
-QT_BIN_MD5_macos=57342f7f5e2aaa5a418ff296214beb07
+QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v9/cutter-deps-qt-${PLATFORM}.tar.gz
+QT_BIN_MD5_linux=7c6c4a40b26208860ad9f11b17422990
+QT_BIN_MD5_macos=618eb84f477a11c6e491556a72d41bd5
 QT_BIN_MD5_win=TODO
 QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
@@ -74,10 +74,10 @@ QT_OPENGL_ENABLED:=1
 QT_DEPS=
 endif
 
-PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.3.tar.xz
-PYSIDE_SRC_MD5=8f2026cf831936b15069cb3169f96fbf
-PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.3-src/pyside-setup-everywhere-src-5.12.3.tar.xz
-PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.3
+PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.5.tar.xz
+PYSIDE_SRC_MD5=b5053919d8f870975c1570eeeb07336b
+PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.5-src/pyside-setup-everywhere-src-5.12.5.tar.xz
+PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.5
 #PYSIDE_SRC_DIR=pyside-src
 #PYSIDE_SRC_GIT=https://code.qt.io/pyside/pyside-setup.git
 #PYSIDE_SRC_GIT_COMMIT=7a7952fc2e0809ef7f12a726376cec457897c364
