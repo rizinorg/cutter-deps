@@ -1,16 +1,16 @@
---- pyside-setup-everywhere-src-5.12.3/sources/pyside2/CMakeLists.txt	2019-04-29 08:50:05.000000000 +0200
-+++ CMakeLists.txt	2019-05-20 12:45:20.173557543 +0200
-@@ -257,7 +257,8 @@
+--- pyside-setup-everywhere-src-5.12.5/sources/pyside2/CMakeLists.txt	2019-09-11 08:23:10.000000000 +0300
++++ CMakeLists.txt	2019-10-31 22:25:22.373319664 +0200
+@@ -260,7 +260,8 @@
  # Collect all optional modules.
  set(ALL_OPTIONAL_MODULES Xml XmlPatterns Help Multimedia
- MultimediaWidgets OpenGL Positioning Location Qml Quick QuickWidgets RemoteObjects Scxml Script ScriptTools Sensors TextToSpeech Charts Svg DataVisualization)
+ MultimediaWidgets OpenGL OpenGLFunctions Positioning Location Qml Quick QuickWidgets RemoteObjects Scxml Script ScriptTools Sensors TextToSpeech Charts Svg DataVisualization)
 -find_package(Qt5UiTools)
 +#find_package(Qt5UiTools)
 +set(Qt5UiTools_FOUND FALSE)
  if(Qt5UiTools_FOUND)
      list(APPEND ALL_OPTIONAL_MODULES UiTools)
  else()
-@@ -404,7 +405,8 @@
+@@ -407,7 +408,8 @@
  endif()
  
  add_subdirectory(libpyside)
