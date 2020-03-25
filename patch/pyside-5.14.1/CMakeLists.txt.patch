@@ -1,0 +1,12 @@
+--- pyside-setup-everywhere-src-5.12.5/sources/pyside2/CMakeLists.txt	2019-09-11 08:23:10.000000000 +0300
++++ CMakeLists.txt	2019-10-31 22:25:22.373319664 +0200
+@@ -241,7 +242,8 @@
+ #####################################################################
+ 
+ add_subdirectory(libpyside)
+-find_package(Qt5Designer)
++#find_package(Qt5Designer)
++set(Qt5Designer_FOUND FALSE)
+ if(Qt5UiTools_FOUND AND Qt5Designer_FOUND)
+     add_subdirectory(plugins)
+ endif()

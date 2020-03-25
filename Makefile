@@ -57,11 +57,12 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 #QT_SRC_URL=https://download.qt.io/official_releases/qt/5.12/5.12.1/single/qt-everywhere-src-5.12.1.tar.xz
 
 ifeq (${QT_PREFIX},)
-QT_BIN_FILE=cutter-deps-qt.tar.gz
-QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v9/cutter-deps-qt-${PLATFORM}.tar.gz
-QT_BIN_MD5_linux=7c6c4a40b26208860ad9f11b17422990
-QT_BIN_MD5_macos=618eb84f477a11c6e491556a72d41bd5
-QT_BIN_MD5_win=TODO
+QT_BIN_FILE=cutter-deps-qt-${PLATFORM}.tar.gz
+PACKAGE_FILE=cutter-deps-${PLATFORM}.tar.gz
+QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v9/${QT_BIN_FILE}
+QT_BIN_MD5_linux=06ec8a1a89cbae078ca9a84579e8c9ce
+QT_BIN_MD5_macos=2975208b05ce617e71844d1b3ba41221
+QT_BIN_MD5_win=e1ba0fdfcdebe48bd255e01ddd794339
 QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
 QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
@@ -74,16 +75,15 @@ QT_OPENGL_ENABLED:=1
 QT_DEPS=
 endif
 
-PYSIDE_SRC_FILE=pyside-setup-everywhere-src-5.12.5.tar.xz
-PYSIDE_SRC_MD5=b5053919d8f870975c1570eeeb07336b
-PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-5.12.5-src/pyside-setup-everywhere-src-5.12.5.tar.xz
-PYSIDE_SRC_DIR=pyside-setup-everywhere-src-5.12.5
+QT_VERSION=5.14.2
+PYSIDE_SRC_FILE=pyside-setup-opensource-src-${QT_VERSION}.tar.xz
+PYSIDE_SRC_MD5=e81aefb22c8584d6420ccdf3cb86673c
+PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${QT_VERSION}-src/pyside-setup-opensource-src-${QT_VERSION}.tar.xz
+PYSIDE_SRC_DIR=pyside-setup-opensource-src-${QT_VERSION}
 #PYSIDE_SRC_DIR=pyside-src
 #PYSIDE_SRC_GIT=https://code.qt.io/pyside/pyside-setup.git
 #PYSIDE_SRC_GIT_COMMIT=7a7952fc2e0809ef7f12a726376cec457897c364
 PYSIDE_PREFIX=${ROOT_DIR}/pyside
-
-PACKAGE_FILE=cutter-deps-${PLATFORM}.tar.gz
 
 BUILD_THREADS=4
 
@@ -264,7 +264,7 @@ ${PYSIDE_SRC_DIR}:
 	
 	# Patch needed, so the PySide2 CMakeLists.txt doesn't search for Qt5UiTools and other stuff,
 	# which would mess up finding the actual modules later.
-	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.12.5/CMakeLists.txt.patch
+	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.14.1/CMakeLists.txt.patch
 	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
 
 ifneq (${QT_OPENGL_ENABLED},1)
