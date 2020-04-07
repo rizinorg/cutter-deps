@@ -1,5 +1,4 @@
 language: c
-dist: xenial
 osx_image: xcode10.1
 
 cache: ccache
@@ -8,6 +7,7 @@ matrix:
   include:
   - os: linux
     env: DEPLOY_FILE=cutter-deps-linux.tar.gz
+    dist: xenial
   - os: osx
     env: DEPLOY_FILE=cutter-deps-macos.tar.gz
 
@@ -16,6 +16,7 @@ addons:
     packages:
     - llvm
     - ccache
+    update: true
 
   apt:
     update: true
@@ -24,7 +25,10 @@ addons:
     - libglu1-mesa-dev
     - libegl1-mesa-dev
 
-install: if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH=/usr/local/opt/llvm/bin:$PATH; fi
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      export PATH=/usr/local/opt/llvm/bin:$PATH;
+    fi
 
 script: make
 
