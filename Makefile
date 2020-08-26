@@ -38,7 +38,7 @@ PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python3.6m
 PYTHON_EXECUTABLE=${PYTHON_PREFIX}/bin/python3
 else
 PYTHON_PREFIX=${PYTHON_WINDOWS}
-PYTHON_LIBRARY=${PYTHON_WINDOWS}/libs/python36.lib
+PYTHON_LIBRARY=${PYTHON_WINDOWS}/libs/python3.lib
 PYTHON_INCLUDE_DIR=${PYTHON_WINDOWS}/include
 PYTHON_EXECUTABLE=${PYTHON_WINDOWS}/python.exe
 PYTHON_DEPS=
@@ -267,6 +267,11 @@ ${PYSIDE_SRC_DIR}:
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.14.1/CMakeLists.txt.patch
 	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
 
+	
+ifeq (${PLATFORM},win)
+	patch "${PYSIDE_SRC_DIR}/sources/shiboken2/ApiExtractor/CMakeLists.txt" patch/lib_install_path.patch
+endif
+
 ifneq (${QT_OPENGL_ENABLED},1)
 	# Patches to remove OpenGL-related source files.
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtGui/CMakeLists.txt" patch/pyside-5.12.1/QtGui-CMakeLists.txt.patch
@@ -331,6 +336,7 @@ endif
 ifeq (${PLATFORM},win)
 	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja -j ${BUILD_THREADS}
 	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja install
+	cp "${LLVM_INSTALL_DIR}/bin/libclang.dll" "${PYSIDE_PREFIX}/bin/"
 else
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j${BUILD_THREADS}
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install
