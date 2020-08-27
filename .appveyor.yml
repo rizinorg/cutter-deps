@@ -12,13 +12,8 @@ build_script:
   - C:\msys64\usr\bin\bash -lc "
     mkdir ninja &&
     cd ninja &&
-    #wget https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-win.zip &&
-    #7z x ninja-win.zip &&
-    # Download it because appveyor VS 2017 image provides only LLVM 9
-    wget https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/LLVM-10.0.0-win64.exe
-    7z x -oLLVM LLVM-10.0.0-win64.exe
-    # cd \"%APPVEYOR_BUILD_FOLDER%\" &&
-    #export PATH=\"$PWD/ninja:$PWD/qt/bin:$PATH\" &&
+    wget https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/LLVM-10.0.0-win64.exe &&
+    7z x -oLLVM LLVM-10.0.0-win64.exe &&
     export PATH=\"$PWD/qt/bin:$PATH\" &&
     export LLVM_INSTALL_DIR=\"$PWD/LLVM\" &&
     make PYTHON_WINDOWS=\"C:\Python36-x64\""
