@@ -10,10 +10,16 @@ environment:
 build_script:
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
   - C:\msys64\usr\bin\bash -lc "
+    pwd &&
     wget https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/LLVM-10.0.0-win64.exe &&
     7z x -oLLVM LLVM-10.0.0-win64.exe &&
     export PATH=\"$PWD/qt/bin:$PATH\" &&
     export LLVM_INSTALL_DIR=\"$PWD/LLVM\" &&
+    pwd &&
+    ls &&
+    cd \"%APPVEYOR_BUILD_FOLDER%\" &&
+    pwd &&
+    ls &&
     make PYTHON_WINDOWS=\"C:\Python36-x64\""
 
 artifacts:
