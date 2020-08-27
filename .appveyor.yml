@@ -13,6 +13,7 @@ build_script:
     wget https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/LLVM-10.0.0-win64.exe &&
     7z x -oLLVM LLVM-10.0.0-win64.exe &&
     export LLVM_INSTALL_DIR=\"$PWD/LLVM\" &&
+    mv \"C:\Program Files\LLVM\" \"C:\Program Files\LLVM_FOO\" &&
     export PATH=\"$PWD/qt/bin:$LLVM_INSTALL_DIR/bin:$PATH\" &&
     cd \"%APPVEYOR_BUILD_FOLDER%\" &&
     make PYTHON_WINDOWS=\"C:\Python36-x64\""
