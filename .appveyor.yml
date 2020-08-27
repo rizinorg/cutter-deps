@@ -15,7 +15,6 @@ build_script:
     export LLVM_INSTALL_DIR=\"$PWD/LLVM\" &&
     cd \"%APPVEYOR_BUILD_FOLDER%\" &&
     export PATH=\"$PWD/qt/bin:$LLVM_INSTALL_DIR/bin:$PATH\" &&
-    
     make PYTHON_WINDOWS=\"C:\Python36-x64\""
 
 artifacts:
