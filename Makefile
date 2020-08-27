@@ -336,6 +336,7 @@ endif
 ifeq (${PLATFORM},win)
 	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja -j ${BUILD_THREADS}
 	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja install
+	cp "${LLVM_INSTALL_DIR}/bin/libclang.dll" "${PYSIDE_PREFIX}/bin/"
 else
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j${BUILD_THREADS}
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install
