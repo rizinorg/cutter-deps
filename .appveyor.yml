@@ -11,7 +11,7 @@ build_script:
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
   - C:\msys64\usr\bin\bash -lc "
     wget https://github.com/llvm/llvm-project/releases/download/llvmorg-11.0.0/LLVM-11.0.0-win64.exe &&
-    7z x -oLLVM LLVM-10.0.0-win64.exe &&
+    7z x -oLLVM LLVM-11.0.0-win64.exe &&
     export LLVM_INSTALL_DIR=\"$PWD/LLVM\" &&
     cd \"%APPVEYOR_BUILD_FOLDER%\" &&
     export PATH=\"$PWD/qt/bin:$LLVM_INSTALL_DIR/bin:$PATH\" &&
