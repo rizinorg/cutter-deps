@@ -1,0 +1,45 @@
+name: package build
+
+on:
+  push:
+    branches:
+    - master
+    tags:
+    - v*
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v2
+    - name: build linux
+      if: contains(matrix.os, 'ubuntu')
+      run: |
+        which llvm-config
+        llvm-config --version
+        # make
+        echo UPLOAD_FILE=cutter-deps-linux.tar.gz >> %GITHUB_ENV%
+        echo UPLOAD_ASSET_TYPE=application/gzip >> %GITHUB_ENV%
+    - name: Get release
+      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+      id: get_release
+      uses: karliss/get-release@bee343636450eb2e9b85d9f1592d8d73c408dc74
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload release assets
+      if: false && steps.get_release.outputs.upload_url != null
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ${{ env.UPLOAD_FILE }}
+          asset_name: ${{ env.UPLOAD_FILE }}
+          asset_content_type: ${{ env.UPLOAD_ASSET_TYPE }}
