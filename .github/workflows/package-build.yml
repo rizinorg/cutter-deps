@@ -22,11 +22,19 @@ jobs:
     - name: build linux
       if: contains(matrix.os, 'ubuntu')
       run: |
-        which llvm-config
-        llvm-config --version
-        # make
+        set -euo pipefail
+        apt search libclang
+        sudo apt install libclang-8-dev llvm-8
+        mkdir llvm_symlink
+        ln -s /usr/bin/llvm-config-8 llvm_symlink/llvm-config
+        export PATH=`pwd`/llvm_symlink:$PATH
+        make
         echo UPLOAD_FILE=cutter-deps-linux.tar.gz >> %GITHUB_ENV%
         echo UPLOAD_ASSET_TYPE=application/gzip >> %GITHUB_ENV%
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.UPLOAD_FILE }}
+        path: ${{ env.UPLOAD_FILE }}
     - name: Get release
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
       id: get_release
