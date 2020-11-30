@@ -23,7 +23,7 @@ jobs:
       if: contains(matrix.os, 'ubuntu')
       run: |
         set -euo pipefail
-        apt search libclang
+        sudo apt remove llvm-9
         sudo apt install libclang-8-dev llvm-8 mesa-common-dev libgl1-mesa-dev
         mkdir llvm_symlink
         ln -s /usr/bin/llvm-config-8 llvm_symlink/llvm-config
