@@ -178,7 +178,7 @@ ifeq (${PLATFORM},macos)
 	# Patch for https://github.com/radareorg/cutter/issues/424
 	sed -i ".original" "s/#define HAVE_GETENTROPY 1/#define HAVE_GETENTROPY 0/" "${PYTHON_SRC_DIR}/pyconfig.h"
 else
-	cd "${PYTHON_SRC_DIR}" && ./configure --enable-shared --prefix="${PYTHON_PREFIX}"
+	cd "${PYTHON_SRC_DIR}" && ./configure --enable-shared --enable-optimizations --prefix="${PYTHON_PREFIX}"
 endif
 
 	make -C "${PYTHON_SRC_DIR}" -j${BUILD_THREADS} > /dev/null

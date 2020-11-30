@@ -24,10 +24,15 @@ jobs:
       run: |
         set -euo pipefail
         apt search libclang
-        sudo apt install libclang-8-dev llvm-8
+        sudo apt install libclang-8-dev llvm-8 mesa-common-dev libgl1-mesa-dev
         mkdir llvm_symlink
         ln -s /usr/bin/llvm-config-8 llvm_symlink/llvm-config
         export PATH=`pwd`/llvm_symlink:$PATH
+        which llvm-config-9
+        dpkg -S /usr/bin/lllvm-config-9
+        echo $PATH
+        llvm-config --version
+        echo ------------
         make
         echo UPLOAD_FILE=cutter-deps-linux.tar.gz >> %GITHUB_ENV%
         echo UPLOAD_ASSET_TYPE=application/gzip >> %GITHUB_ENV%
