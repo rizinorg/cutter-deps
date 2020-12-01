@@ -28,7 +28,6 @@ jobs:
         mkdir llvm_symlink
         ln -s /usr/bin/llvm-config-8 llvm_symlink/llvm-config
         export PATH=`pwd`/llvm_symlink:$PATH
-        dpkg -S /usr/bin/llvm-config-9
         echo $PATH
         llvm-config --version
         echo ------------
