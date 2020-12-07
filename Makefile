@@ -264,7 +264,7 @@ ${PYSIDE_SRC_DIR}:
 	
 	# Patch needed, so the PySide2 CMakeLists.txt doesn't search for Qt5UiTools and other stuff,
 	# which would mess up finding the actual modules later.
-	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.14.1/CMakeLists.txt.patch
+	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.15.2/CMakeLists.txt.patch
 	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
 
 	

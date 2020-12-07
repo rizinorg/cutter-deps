@@ -1,0 +1,12 @@
+--- sources/pyside2/CMakeLists.txt	2020-11-11 14:51:30.000000000 +0200
++++ sources/pyside2/CMakeListsAfter.txt	2020-12-07 22:48:36.144247404 +0200
+@@ -252,7 +252,8 @@
+ #####################################################################
+ 
+ add_subdirectory(libpyside)
+-find_package(Qt${QT_MAJOR_VERSION}Designer)
++#find_package(Qt${QT_MAJOR_VERSION}Designer)
++set(Qt${QT_MAJOR_VERSION}Designer_FOUND FALSE)
+ if(${QT_MAJOR_VERSION} LESS 6 AND Qt${QT_MAJOR_VERSION}UiTools_FOUND
+    AND Qt${QT_MAJOR_VERSION}Designer_FOUND)
+     add_subdirectory(plugins)
