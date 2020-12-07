@@ -59,10 +59,10 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 ifeq (${QT_PREFIX},)
 QT_BIN_FILE=cutter-deps-qt-${PLATFORM}.tar.gz
 PACKAGE_FILE=cutter-deps-${PLATFORM}.tar.gz
-QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v9/${QT_BIN_FILE}
-QT_BIN_MD5_linux=06ec8a1a89cbae078ca9a84579e8c9ce
-QT_BIN_MD5_macos=2975208b05ce617e71844d1b3ba41221
-QT_BIN_MD5_win=e1ba0fdfcdebe48bd255e01ddd794339
+QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/test-v10/${QT_BIN_FILE}
+QT_BIN_MD5_linux=ce74c1f10bbf808f6a8e2468e4b2bf81
+QT_BIN_MD5_macos=b10478fd0744f45225951dd4d59514f7
+QT_BIN_MD5_win=617fd3b6058c4a564e004b83c39b9ac5
 QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
 QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
@@ -75,9 +75,9 @@ QT_OPENGL_ENABLED:=1
 QT_DEPS=
 endif
 
-QT_VERSION=5.14.2
+QT_VERSION=5.15.2
 PYSIDE_SRC_FILE=pyside-setup-opensource-src-${QT_VERSION}.tar.xz
-PYSIDE_SRC_MD5=e81aefb22c8584d6420ccdf3cb86673c
+PYSIDE_SRC_MD5=e9bb6b57d39eb6cf1720cd3589a8b76a
 PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${QT_VERSION}-src/pyside-setup-opensource-src-${QT_VERSION}.tar.xz
 PYSIDE_SRC_DIR=pyside-setup-opensource-src-${QT_VERSION}
 #PYSIDE_SRC_DIR=pyside-src
