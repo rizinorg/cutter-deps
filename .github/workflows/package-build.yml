@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-16.04, macos-10.15]
+        os: [ubuntu-16.04, macos-10.15, windows-2016]
       fail-fast: false
     steps:
     - uses: actions/checkout@v2
@@ -36,6 +36,18 @@ jobs:
         make
         echo UPLOAD_FILE=cutter-deps-macos.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
+    - name: build windows
+      if: contains(matrix.os, 'windows')
+      shell: cmd
+      run: |
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        C:\msys64\usr\bin\bash -lc "
+          wget https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/LLVM-10.0.0-win64.exe &&
+          7z x -oLLVM LLVM-10.0.0-win64.exe &&
+          export LLVM_INSTALL_DIR=\"$PWD/LLVM\" &&
+          cd \"%APPVEYOR_BUILD_FOLDER%\" &&
+          export PATH=\"$PWD/qt/bin:$LLVM_INSTALL_DIR/bin:$PATH\" &&
+          make PYTHON_WINDOWS=\"C:\Python36-x64\""
     - uses: actions/upload-artifact@v2
       with:
         name: ${{ env.UPLOAD_FILE }}
