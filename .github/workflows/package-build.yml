@@ -35,7 +35,7 @@ jobs:
         brew install llvm ccache
         export PATH=/usr/local/opt/llvm/bin:$PATH;
         xcode-select -print-path
-        sudo xcode-select -s /Applications/Xcode_11.5.app/Contents/Developer
+        sudo xcode-select -s /Applications/Xcode_10.3.app/Contents/Developer
         xcode-select -print-path
         which llvm-config
         make
