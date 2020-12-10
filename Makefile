@@ -20,10 +20,12 @@ endif
 PKG_FILES=pyside
 
 ifeq (${PYTHON_WINDOWS},)
-PYTHON_SRC_FILE=Python-3.6.4.tar.xz
-PYTHON_SRC_MD5=1325134dd525b4a2c3272a1a0214dd54
-PYTHON_SRC_URL=https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tar.xz
-PYTHON_SRC_DIR=Python-3.6.4
+PYTHON_VERSION=3.6.12
+PYTHON_VERSION_MAJOR_MINOR=3.6
+PYTHON_SRC_FILE=Python-${PYTHON_VERSION}.tar.xz
+PYTHON_SRC_MD5=9ca8ca6f206e9ac0f0726ecb4ebb6e2c
+PYTHON_SRC_URL=https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz
+PYTHON_SRC_DIR=Python-${PYTHON_VERSION}
 PYTHON_DEPS=python
 PKG_FILES+=python
 ifeq (${PLATFORM},macos)
@@ -34,7 +36,7 @@ else
 endif
 ${PYTHON_SRC_DIR}_target=PYTHON_SRC
 PYTHON_LIBRARY=${PYTHON_PREFIX}/lib/libpython3.so
-PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python3.6m
+PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python${PYTHON_VERSION_MAJOR_MINOR}m
 PYTHON_EXECUTABLE=${PYTHON_PREFIX}/bin/python3
 else
 PYTHON_PREFIX=${PYTHON_WINDOWS}
@@ -190,7 +192,7 @@ else
 endif
 
 ifeq (${PLATFORM},linux)
-	for lib in "${PYTHON_PREFIX}/lib/python3.6/lib-dynload"/*.so ; do \
+	for lib in "${PYTHON_PREFIX}/lib/python${PYTHON_VERSION_MAJOR_MINOR}/lib-dynload"/*.so ; do \
 		echo "  patching $$lib" && \
 		"${PATCHELF_EXECUTABLE}" --set-rpath '$$ORIGIN/../..' "$$lib" || exit 1 ; \
 	done
