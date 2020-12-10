@@ -23,8 +23,10 @@ ifeq (${PYTHON_WINDOWS},)
 PYTHON_VERSION=3.9.1
 PYTHON_VERSION_MAJOR_MINOR=3.9
 PYTHON_SRC_FILE=Python-${PYTHON_VERSION}.tar.xz
-#PYTHON_SRC_MD5=9ca8ca6f206e9ac0f0726ecb4ebb6e2c # 3.16.12
-PYTHON_SRC_MD5=61981498e75ac8f00adcb908281fadb6 # 3.9.1
+# 3.6.12
+#PYTHON_SRC_MD5=9ca8ca6f206e9ac0f0726ecb4ebb6e2c
+# 3.9.1
+PYTHON_SRC_MD5=61981498e75ac8f00adcb908281fadb6
 
 PYTHON_SRC_URL=https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz
 PYTHON_SRC_DIR=Python-${PYTHON_VERSION}
@@ -38,7 +40,7 @@ else
 endif
 ${PYTHON_SRC_DIR}_target=PYTHON_SRC
 PYTHON_LIBRARY=${PYTHON_PREFIX}/lib/libpython3.so
-PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python${PYTHON_VERSION_MAJOR_MINOR}m
+PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python${PYTHON_VERSION_MAJOR_MINOR}
 PYTHON_EXECUTABLE=${PYTHON_PREFIX}/bin/python3
 else
 PYTHON_PREFIX=${PYTHON_WINDOWS}
@@ -130,6 +132,7 @@ ifeq (${PLATFORM},macos)
 	@echo "Checking MD5 for $1"
         @if [ "`md5 -r \"$1\"`" != "$2 $1" ]; then \
                 echo "MD5 mismatch for file $1"; \
+				md5 -r "$1";\
                 exit 1; \
         else \
                 echo "$1 OK"; \
