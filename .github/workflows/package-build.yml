@@ -35,6 +35,8 @@ jobs:
         brew install llvm ccache
         export PATH=/usr/local/opt/llvm/bin:$PATH;
         xcode-select -print-path
+        sudo xcode-select -s /Applications/Xcode_11.5.app/Contents/Developer
+        xcode-select -print-path
         which llvm-config
         make
         echo UPLOAD_FILE=cutter-deps-macos.tar.gz >> $GITHUB_ENV
