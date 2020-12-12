@@ -275,7 +275,7 @@ ${PYSIDE_SRC_DIR}:
 	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
 
 # ifeq (${PLATFORM},win)
-	patch "${PYSIDE_SRC_DIR}/sources/shiboken2/ApiExtractor/CMakeLists.txt" patch/shiboken_executable_install.patch
+	patch "${PYSIDE_SRC_DIR}/sources/shiboken2/ApiExtractor/CMakeLists.txt" patch/pyside-5.15.2/shiboken_executable_install.patch
 #endif
 
 ifneq (${QT_OPENGL_ENABLED},1)
