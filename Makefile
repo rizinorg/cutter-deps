@@ -65,10 +65,10 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 ifeq (${QT_PREFIX},)
 QT_BIN_FILE=cutter-deps-qt-${PLATFORM}.tar.gz
 PACKAGE_FILE=cutter-deps-${PLATFORM}.tar.gz
-QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/test-v10/${QT_BIN_FILE}
-QT_BIN_MD5_linux=ce74c1f10bbf808f6a8e2468e4b2bf81
-QT_BIN_MD5_macos=b10478fd0744f45225951dd4d59514f7
-QT_BIN_MD5_win=617fd3b6058c4a564e004b83c39b9ac5
+QT_BIN_URL=https://github.com/rizinorg/cutter-deps-qt/releases/download/v10/${QT_BIN_FILE}
+QT_BIN_MD5_linux=e64ca2b9fb89b10349bbfd832554090e
+QT_BIN_MD5_macos=887c0e4ac0924f751badff0646f12bb6
+QT_BIN_MD5_win=226a052638521057a60385b9d547f242
 QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
 QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
