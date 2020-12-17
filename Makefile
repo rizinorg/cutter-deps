@@ -20,10 +20,16 @@ endif
 PKG_FILES=pyside
 
 ifeq (${PYTHON_WINDOWS},)
-PYTHON_SRC_FILE=Python-3.6.4.tar.xz
-PYTHON_SRC_MD5=1325134dd525b4a2c3272a1a0214dd54
-PYTHON_SRC_URL=https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tar.xz
-PYTHON_SRC_DIR=Python-3.6.4
+PYTHON_VERSION=3.9.1
+PYTHON_VERSION_MAJOR_MINOR=3.9
+PYTHON_SRC_FILE=Python-${PYTHON_VERSION}.tar.xz
+# 3.6.12
+#PYTHON_SRC_MD5=9ca8ca6f206e9ac0f0726ecb4ebb6e2c
+# 3.9.1
+PYTHON_SRC_MD5=61981498e75ac8f00adcb908281fadb6
+
+PYTHON_SRC_URL=https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz
+PYTHON_SRC_DIR=Python-${PYTHON_VERSION}
 PYTHON_DEPS=python
 PKG_FILES+=python
 ifeq (${PLATFORM},macos)
@@ -34,7 +40,7 @@ else
 endif
 ${PYTHON_SRC_DIR}_target=PYTHON_SRC
 PYTHON_LIBRARY=${PYTHON_PREFIX}/lib/libpython3.so
-PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python3.6m
+PYTHON_INCLUDE_DIR=${PYTHON_PREFIX}/include/python${PYTHON_VERSION_MAJOR_MINOR}
 PYTHON_EXECUTABLE=${PYTHON_PREFIX}/bin/python3
 else
 PYTHON_PREFIX=${PYTHON_WINDOWS}
@@ -59,10 +65,10 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 ifeq (${QT_PREFIX},)
 QT_BIN_FILE=cutter-deps-qt-${PLATFORM}.tar.gz
 PACKAGE_FILE=cutter-deps-${PLATFORM}.tar.gz
-QT_BIN_URL=https://github.com/radareorg/cutter-deps-qt/releases/download/v9/${QT_BIN_FILE}
-QT_BIN_MD5_linux=06ec8a1a89cbae078ca9a84579e8c9ce
-QT_BIN_MD5_macos=2975208b05ce617e71844d1b3ba41221
-QT_BIN_MD5_win=e1ba0fdfcdebe48bd255e01ddd794339
+QT_BIN_URL=https://github.com/rizinorg/cutter-deps-qt/releases/download/v10/${QT_BIN_FILE}
+QT_BIN_MD5_linux=e64ca2b9fb89b10349bbfd832554090e
+QT_BIN_MD5_macos=887c0e4ac0924f751badff0646f12bb6
+QT_BIN_MD5_win=226a052638521057a60385b9d547f242
 QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
 QT_BIN_DIR=qt
 QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
@@ -75,9 +81,9 @@ QT_OPENGL_ENABLED:=1
 QT_DEPS=
 endif
 
-QT_VERSION=5.14.2
+QT_VERSION=5.15.2
 PYSIDE_SRC_FILE=pyside-setup-opensource-src-${QT_VERSION}.tar.xz
-PYSIDE_SRC_MD5=e81aefb22c8584d6420ccdf3cb86673c
+PYSIDE_SRC_MD5=e9bb6b57d39eb6cf1720cd3589a8b76a
 PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${QT_VERSION}-src/pyside-setup-opensource-src-${QT_VERSION}.tar.xz
 PYSIDE_SRC_DIR=pyside-setup-opensource-src-${QT_VERSION}
 #PYSIDE_SRC_DIR=pyside-src
@@ -126,6 +132,7 @@ ifeq (${PLATFORM},macos)
 	@echo "Checking MD5 for $1"
         @if [ "`md5 -r \"$1\"`" != "$2 $1" ]; then \
                 echo "MD5 mismatch for file $1"; \
+				md5 -r "$1";\
                 exit 1; \
         else \
                 echo "$1 OK"; \
@@ -190,7 +197,7 @@ else
 endif
 
 ifeq (${PLATFORM},linux)
-	for lib in "${PYTHON_PREFIX}/lib/python3.6/lib-dynload"/*.so ; do \
+	for lib in "${PYTHON_PREFIX}/lib/python${PYTHON_VERSION_MAJOR_MINOR}/lib-dynload"/*.so ; do \
 		echo "  patching $$lib" && \
 		"${PATCHELF_EXECUTABLE}" --set-rpath '$$ORIGIN/../..' "$$lib" || exit 1 ; \
 	done
@@ -264,13 +271,12 @@ ${PYSIDE_SRC_DIR}:
 	
 	# Patch needed, so the PySide2 CMakeLists.txt doesn't search for Qt5UiTools and other stuff,
 	# which would mess up finding the actual modules later.
-	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.14.1/CMakeLists.txt.patch
+	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.15.2/CMakeLists.txt.patch
 	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
 
-	
-ifeq (${PLATFORM},win)
-	patch "${PYSIDE_SRC_DIR}/sources/shiboken2/ApiExtractor/CMakeLists.txt" patch/lib_install_path.patch
-endif
+# ifeq (${PLATFORM},win)
+	patch "${PYSIDE_SRC_DIR}/sources/shiboken2/generator/CMakeLists.txt" patch/pyside-5.15.2/shiboken_executable_install.patch
+#endif
 
 ifneq (${QT_OPENGL_ENABLED},1)
 	# Patches to remove OpenGL-related source files.
