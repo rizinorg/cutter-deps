@@ -41,6 +41,7 @@ jobs:
         xcode-select -print-path
         which llvm-config
         llvm-config --version
+        export MACOSX_DEPLOYMENT_TARGET=10.14
         make
         echo UPLOAD_FILE=cutter-deps-macos.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
