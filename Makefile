@@ -2,6 +2,7 @@
 ROOT_DIR=${CURDIR}
 
 PLATFORMS_SUPPORTED=win linux macos
+ARCH:=x86_64
 ifeq (${OS},Windows_NT)
   PLATFORM:=win
 else
@@ -11,6 +12,7 @@ else
   endif
   ifeq (${UNAME_S},Darwin)
     PLATFORM:=macos
+    ARCH:=${shell uname -m}
   endif
 endif
 ifeq ($(filter ${PLATFORM},${PLATFORMS_SUPPORTED}),)
@@ -20,13 +22,10 @@ endif
 PKG_FILES=pyside
 
 ifeq (${PYTHON_WINDOWS},)
-PYTHON_VERSION=3.9.3
+PYTHON_VERSION=3.9.13
 PYTHON_VERSION_MAJOR_MINOR=3.9
 PYTHON_SRC_FILE=Python-${PYTHON_VERSION}.tar.xz
-# 3.6.12
-#PYTHON_SRC_MD5=9ca8ca6f206e9ac0f0726ecb4ebb6e2c
-# 3.9.3
-PYTHON_SRC_MD5=11410f31e334f06c07c89e87a1cb7d6e
+PYTHON_SRC_SHA256=125b0c598f1e15d2aa65406e83f792df7d171cdf38c16803b149994316a3080f
 
 PYTHON_SRC_URL=https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz
 PYTHON_SRC_DIR=Python-${PYTHON_VERSION}
@@ -52,24 +51,21 @@ endif
 
 
 PATCHELF_SRC_FILE=patchelf-0.9.tar.bz2
-PATCHELF_SRC_MD5=d02687629c7e1698a486a93a0d607947
+PATCHELF_SRC_SHA256=a0f65c1ba148890e9f2f7823f4bedf7ecad5417772f64f994004f59a39014f83
 PATCHELF_SRC_URL=https://nixos.org/releases/patchelf/patchelf-0.9/patchelf-0.9.tar.bz2
 PATCHELF_SRC_DIR=patchelf-0.9
 PATCHELF_EXECUTABLE=${PATCHELF_SRC_DIR}/src/patchelf
 ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 
-#QT_SRC_FILE=qt-everywhere-src-5.12.1.tar.xz
-#QT_SRC_MD5=6a37466c8c40e87d4a19c3f286ec2542
-#QT_SRC_URL=https://download.qt.io/official_releases/qt/5.12/5.12.1/single/qt-everywhere-src-5.12.1.tar.xz
-
 ifeq (${QT_PREFIX},)
-QT_BIN_FILE=cutter-deps-qt-${PLATFORM}.tar.gz
-PACKAGE_FILE=cutter-deps-${PLATFORM}.tar.gz
-QT_BIN_URL=https://github.com/rizinorg/cutter-deps-qt/releases/download/v10/${QT_BIN_FILE}
-QT_BIN_MD5_linux=e64ca2b9fb89b10349bbfd832554090e
-QT_BIN_MD5_macos=887c0e4ac0924f751badff0646f12bb6
-QT_BIN_MD5_win=226a052638521057a60385b9d547f242
-QT_BIN_MD5=${QT_BIN_MD5_${PLATFORM}}
+QT_BIN_FILE=cutter-deps-qt-${PLATFORM}-${ARCH}.tar.gz
+PACKAGE_FILE=cutter-deps-${PLATFORM}-${ARCH}.tar.gz
+QT_BIN_URL=https://github.com/rizinorg/cutter-deps-qt/releases/download/v12/${QT_BIN_FILE}
+QT_BIN_SHA256_linux_x86_64=3aa9a1b9b137d35086ca7dcfb7ea59e25ee0947c0952a2af14942d968e2f8516
+QT_BIN_SHA256_macos_arm64=895cd5f8c557f28a040b0c8b620498f1a09f86daa4f026fc445c16dd42fa503e
+QT_BIN_SHA256_macos_x86_64=fe92b328492024ed2a02bfc6b154929a46e02eaa78843f7a0d916c703cce6185
+QT_BIN_SHA256_win_x86_64=a852631a9f24ac4498bc9c7927004627efe766b2e1486fc2bc96c9b10274a4b6
+QT_BIN_SHA256=${QT_BIN_SHA256_${PLATFORM}_${ARCH}}
 QT_BIN_DIR=qt
 QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
 ${QT_BIN_DIR}_target=QT_BIN
@@ -81,14 +77,17 @@ QT_OPENGL_ENABLED:=1
 QT_DEPS=
 endif
 
-QT_VERSION=5.15.2
-PYSIDE_SRC_FILE=pyside-setup-opensource-src-${QT_VERSION}.tar.xz
-PYSIDE_SRC_MD5=e9bb6b57d39eb6cf1720cd3589a8b76a
-PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${QT_VERSION}-src/pyside-setup-opensource-src-${QT_VERSION}.tar.xz
+QT_VERSION=5.15.5
+ifeq (${PLATFORM},win)
+  # Windows has some issues with symlinks in the tarball
+  PYSIDE_SRC_FILE=pyside-setup-opensource-src-${QT_VERSION}.zip
+  PYSIDE_SRC_SHA256=d1c61308c53636823c1d0662f410966e4a57c2681b551003e458b2cc65902c41
+else
+  PYSIDE_SRC_FILE=pyside-setup-opensource-src-${QT_VERSION}.tar.xz
+  PYSIDE_SRC_SHA256=3920a4fb353300260c9bc46ff70f1fb975c5e7efa22e9d51222588928ce19b33
+endif
+PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${QT_VERSION}-src/${PYSIDE_SRC_FILE}
 PYSIDE_SRC_DIR=pyside-setup-opensource-src-${QT_VERSION}
-#PYSIDE_SRC_DIR=pyside-src
-#PYSIDE_SRC_GIT=https://code.qt.io/pyside/pyside-setup.git
-#PYSIDE_SRC_GIT_COMMIT=7a7952fc2e0809ef7f12a726376cec457897c364
 PYSIDE_PREFIX=${ROOT_DIR}/pyside
 
 BUILD_THREADS=4
@@ -127,27 +126,14 @@ distclean: distclean-python distclean-qt distclean-pyside distclean-pkg clean-re
 
 # Download Targets
 
-ifeq (${PLATFORM},macos)
-  define check_md5
-	@echo "Checking MD5 for $1"
-        @if [ "`md5 -r \"$1\"`" != "$2 $1" ]; then \
-                echo "MD5 mismatch for file $1"; \
-				md5 -r "$1";\
-                exit 1; \
-        else \
-                echo "$1 OK"; \
-        fi
-  endef
-else
-  define check_md5
-        echo "$2 $1" | md5sum -c -
-  endef
-endif
+define check_sha256
+	echo "$2  $1" | shasum -a 256 -c -
+endef
 
 define download_extract
 	curl -L "$1" -o "$2"
-	${call check_md5,$2,$3}
-	tar -xf "$2"
+	${call check_sha256,$2,$3}
+	$(if $(patsubst %.zip,,$(lastword $2)),tar -xf,7z x -bsp1) "$2"
 endef
 
 ${PYTHON_SRC_DIR} ${QT_BIN_DIR} ${PATCHELF_SRC_DIR}:
@@ -156,7 +142,7 @@ ${PYTHON_SRC_DIR} ${QT_BIN_DIR} ${PATCHELF_SRC_DIR}:
 	@echo "# Downloading ${$@_target}"
 	@echo "#########################"
 	@echo ""
-	$(call download_extract,${${$@_target}_URL},${${$@_target}_FILE},${${$@_target}_MD5})
+	$(call download_extract,${${$@_target}_URL},${${$@_target}_FILE},${${$@_target}_SHA256})
 
 
 # Python
@@ -177,13 +163,16 @@ python: ${PYTHON_SRC_DIR} ${PATCHELF_TARGET}
 	@echo "#########################"
 	@echo ""
 
-ifeq (${PLATFORM},macos)
+ifeq (${PLATFORM}-${ARCH},macos-x86_64)
 	cd "${PYTHON_SRC_DIR}" && \
 		CPPFLAGS="-I$(shell brew --prefix openssl)/include" \
-		 LDFLAGS="-L$(shell brew --prefix openssl)/lib" \
-		./configure --enable-framework="${ROOT_DIR}/python"
-	# Patch for https://github.com/radareorg/cutter/issues/424
+		LDFLAGS="-L$(shell brew --prefix openssl)/lib" \
+		./configure --enable-framework="${ROOT_DIR}/python" --prefix="${ROOT_DIR}/python_prefix_tmp"
+	# Patch for https://github.com/rizinorg/cutter/issues/424
 	sed -i ".original" "s/#define HAVE_GETENTROPY 1/#define HAVE_GETENTROPY 0/" "${PYTHON_SRC_DIR}/pyconfig.h"
+else ifeq (${PLATFORM},macos)
+	cd "${PYTHON_SRC_DIR}" && \
+		./configure --enable-framework="${ROOT_DIR}/python" --prefix="${ROOT_DIR}/python_prefix_tmp"
 else
 	cd "${PYTHON_SRC_DIR}" && ./configure --enable-shared --prefix="${PYTHON_PREFIX}"
 endif
@@ -215,6 +204,7 @@ endif
 clean-python:
 	rm -f "${PYTHON_SRC_FILE}"
 	rm -rf "${PYTHON_SRC_DIR}"
+	rm -rf python_prefix_tmp
 
 .PHONY: distclean-python
 distclean-python: clean-python
@@ -265,7 +255,7 @@ ${PYSIDE_SRC_DIR}:
 	@echo "#########################"
 	@echo ""
 
-	$(call download_extract,${PYSIDE_SRC_URL},${PYSIDE_SRC_FILE},${PYSIDE_SRC_MD5})
+	$(call download_extract,${PYSIDE_SRC_URL},${PYSIDE_SRC_FILE},${PYSIDE_SRC_SHA256})
 	#git clone "${PYSIDE_SRC_GIT}" "${PYSIDE_SRC_DIR}"
 	#cd "${PYSIDE_SRC_DIR}" && git checkout "${PYSIDE_SRC_GIT_COMMIT}"
 	
@@ -316,6 +306,10 @@ endif
 
 ifeq (${PLATFORM},macos)
 	install_name_tool -add_rpath @executable_path/../../qt/lib "${PYSIDE_PREFIX}/bin/shiboken2"
+ifeq (${ARCH},arm64)
+	# Our arm64 builder has llvm-14 installed with MacPorts
+	install_name_tool -add_rpath /opt/local/libexec/llvm-14/lib "${PYSIDE_PREFIX}/bin/shiboken2"
+endif
 endif
 
 	@echo ""
