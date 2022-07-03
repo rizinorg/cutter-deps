@@ -26,7 +26,7 @@ jobs:
         sudo apt remove llvm-9
         sudo apt install libclang-8-dev llvm-8 mesa-common-dev libgl1-mesa-dev
         make
-        echo UPLOAD_FILE=cutter-deps-linux.tar.gz >> $GITHUB_ENV
+        echo UPLOAD_FILE=cutter-deps-linux-x86_64.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
     - name: build macos
       if: contains(matrix.os, 'macos')
@@ -43,7 +43,7 @@ jobs:
         llvm-config --version
         export MACOSX_DEPLOYMENT_TARGET=10.14
         make
-        echo UPLOAD_FILE=cutter-deps-macos.tar.gz >> $GITHUB_ENV
+        echo UPLOAD_FILE=cutter-deps-macos-x86_64.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
     - name: build windows
       if: contains(matrix.os, 'windows')
