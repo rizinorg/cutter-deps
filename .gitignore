@@ -3,11 +3,12 @@
 /python
 /test
 /qt-everywhere-src-*
-/pyside-setup-everywhere-src-*
-/Python-3.6.4*
+/pyside-setup-opensource-src-*
+/Python-3.*
 /patchelf-0.9*
-/cutter-deps.tar.gz
+/cutter-deps-*-*.tar.gz
 /cutter-deps-qt.tar.gz
 /pyside-src
 /relocate.sh
 /env.sh
+/python_prefix_tmp
