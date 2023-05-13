@@ -40,4 +40,4 @@ deploy:
   file: "${DEPLOY_FILE}"
   on:
     tags: true
-    repo: radareorg/cutter-deps
+    repo: rizinorg/cutter-deps

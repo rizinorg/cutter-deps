@@ -15,7 +15,7 @@ else:
 makefile_path = os.path.join(os.path.dirname(sys.argv[0]), "..", "Makefile")
 
 print("Fetching latest release")
-json = requests.get("https://api.github.com/repos/radareorg/cutter-deps-qt/releases/latest").json()
+json = requests.get("https://api.github.com/repos/rizinorg/cutter-deps-qt/releases/latest").json()
 
 release_url = json["assets"][0]["browser_download_url"]
 for platform in platforms:
