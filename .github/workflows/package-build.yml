@@ -20,8 +20,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build linux
+      shell: bash
       run: |
-        sudo apt install libclang-11-dev llvm-11 mesa-common-dev libgl1-mesa-dev
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get -qqy update
+        apt-get -qqy install libclang-8-dev \
+                             llvm-8 \
+                             mesa-common-dev \
+                             libgl1-mesa-dev \
+                             zlib1g-dev \
+                             build-essential \
+                             curl \
+                             wget
         make
         echo UPLOAD_FILE=cutter-deps-linux-x86_64.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
@@ -56,15 +66,24 @@ jobs:
       run: |
         set -euo pipefail
         brew install llvm ccache
-        export PATH=/usr/local/opt/llvm/bin:$PATH;
-        xcode-select -print-path
+        export PATH="/usr/local/opt/llvm/bin:$PATH";
+        echo "###### Applications ######"
         ls /Applications
-        sudo xcode-select -s /Applications/Xcode_11.2.1.app/Contents/Developer
-        # sudo xcode-select -s /Applications/Xcode_11.5.app/Contents/Developer
+        echo "###### XCode Info ######"
+        sudo xcode-select -s /Applications/Xcode_11.7.app/Contents/Developer
+        export BUILD_SDK_PATH=$(xcrun --show-sdk-path)
+        echo "$BUILD_SDK_PATH"
+        echo "###### xcode-select Info ######"
         xcode-select -print-path
+        echo "###### LLVM Info ######"
         which llvm-config
         llvm-config --version
-        export MACOSX_DEPLOYMENT_TARGET=10.14
+        echo "###### Make ######"
+        export MACOSX_DEPLOYMENT_TARGET=11.0
+        export MIN_SUPPORTED_MACOSX_DEPLOYMENT_TARGET=11.0
+        export CFLAGS=" -isysroot $BUILD_SDK_PATH "
+        export CCFLAGS=" -isysroot $BUILD_SDK_PATH "
+        export CXXFLAGS=" -isysroot $BUILD_SDK_PATH "
         make
         echo UPLOAD_FILE=cutter-deps-macos-x86_64.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
