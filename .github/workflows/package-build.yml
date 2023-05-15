@@ -24,12 +24,14 @@ jobs:
       run: |
         export DEBIAN_FRONTEND=noninteractive
         apt-get -qqy update
-        apt-get -qqy install libclang-8-dev \
+        apt-get -qqy install build-essential \
+                             libclang-8-dev \
                              llvm-8 \
+                             libglib2.0-dev \
                              mesa-common-dev \
                              libgl1-mesa-dev \
                              zlib1g-dev \
-                             build-essential \
+                             libpcre2-dev \
                              cmake \
                              curl \
                              wget
