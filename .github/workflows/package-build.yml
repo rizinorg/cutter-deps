@@ -73,6 +73,7 @@ jobs:
         echo "###### Applications ######"
         ls /Applications
         echo "###### XCode Info ######"
+        sudo rm -rf /Library/Developer/CommandLineTools
         sudo xcode-select --reset
         export BUILD_SDK_PATH=$(xcrun --show-sdk-path)
         echo "$BUILD_SDK_PATH"
@@ -87,7 +88,6 @@ jobs:
         export CFLAGS=" -isysroot $BUILD_SDK_PATH "
         export CCFLAGS=" -isysroot $BUILD_SDK_PATH "
         export CXXFLAGS=" -isysroot $BUILD_SDK_PATH "
-        sudo rm -rf /Library/Developer/CommandLineTools
         make
         echo UPLOAD_FILE=cutter-deps-macos-x86_64.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
