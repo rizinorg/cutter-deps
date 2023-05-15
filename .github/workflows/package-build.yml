@@ -19,12 +19,16 @@ jobs:
       fail-fast: false
     steps:
     - uses: actions/checkout@v3
+    - name: set timezone
+      run: |
+        # Fix timezone on ubuntu to prevent user input request during the apt-get phase.
+        export TZ=UTC
+        ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
     - name: build linux
       shell: bash
       run: |
-        export DEBIAN_FRONTEND=noninteractive
-        apt-get -qqy update
-        apt-get -qqy install build-essential \
+        apt-get -y update
+        apt-get -y install build-essential \
                              libclang-8-dev \
                              llvm-8 \
                              libglib2.0-dev \
