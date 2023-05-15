@@ -87,6 +87,7 @@ jobs:
         export CFLAGS=" -isysroot $BUILD_SDK_PATH "
         export CCFLAGS=" -isysroot $BUILD_SDK_PATH "
         export CXXFLAGS=" -isysroot $BUILD_SDK_PATH "
+        rm -rf /Library/Developer/CommandLineTools || sleep 0
         make
         echo UPLOAD_FILE=cutter-deps-macos-x86_64.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
