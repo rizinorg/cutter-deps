@@ -165,8 +165,8 @@ python: ${PYTHON_SRC_DIR} ${PATCHELF_TARGET}
 
 ifeq (${PLATFORM}-${ARCH},macos-x86_64)
 	cd "${PYTHON_SRC_DIR}" && \
-		CPPFLAGS="-I$(shell brew --prefix openssl)/include" \
-		LDFLAGS="-L$(shell brew --prefix openssl)/lib" \
+		CPPFLAGS="${CPPFLAGS} -I$(shell brew --prefix openssl)/include" \
+		LDFLAGS="${LDFLAGS} -L$(shell brew --prefix openssl)/lib" \
 		./configure --enable-framework="${ROOT_DIR}/python" --prefix="${ROOT_DIR}/python_prefix_tmp"
 	# Patch for https://github.com/rizinorg/cutter/issues/424
 	sed -i ".original" "s/#define HAVE_GETENTROPY 1/#define HAVE_GETENTROPY 0/" "${PYTHON_SRC_DIR}/pyconfig.h"

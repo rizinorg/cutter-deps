@@ -30,6 +30,7 @@ jobs:
                              libgl1-mesa-dev \
                              zlib1g-dev \
                              build-essential \
+                             cmake \
                              curl \
                              wget
         make
@@ -70,7 +71,7 @@ jobs:
         echo "###### Applications ######"
         ls /Applications
         echo "###### XCode Info ######"
-        sudo xcode-select -s /Applications/Xcode_11.7.app/Contents/Developer
+        sudo xcode-select --reset
         export BUILD_SDK_PATH=$(xcrun --show-sdk-path)
         echo "$BUILD_SDK_PATH"
         echo "###### xcode-select Info ######"
