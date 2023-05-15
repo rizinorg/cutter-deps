@@ -10,6 +10,10 @@ on:
     branches:
     - master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-linux:
     runs-on: ubuntu-latest
@@ -64,7 +68,7 @@ jobs:
           asset_content_type: ${{ env.UPLOAD_ASSET_TYPE }}
 
   build-macos:
-    runs-on: macos-11
+    runs-on: macos-latest
     strategy:
       fail-fast: false
     steps:
@@ -77,7 +81,6 @@ jobs:
         echo "###### Applications ######"
         ls /Applications
         echo "###### XCode Info ######"
-        sudo rm -rf /Library/Developer/CommandLineTools
         sudo xcode-select --reset
         export BUILD_SDK_PATH=$(xcrun --show-sdk-path)
         echo "$BUILD_SDK_PATH"
