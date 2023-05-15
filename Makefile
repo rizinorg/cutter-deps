@@ -90,8 +90,6 @@ PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySi
 PYSIDE_SRC_DIR=pyside-setup-opensource-src-${QT_VERSION}
 PYSIDE_PREFIX=${ROOT_DIR}/pyside
 
-BUILD_THREADS=4
-
 ifeq (${PLATFORM},linux)
   LLVM_LIBDIR=$(shell llvm-config --libdir)
   export LD_LIBRARY_PATH := ${PYTHON_PREFIX}/lib:${QT_PREFIX}/lib:${LLVM_LIBDIR}:${LD_LIBRARY_PATH}
@@ -177,7 +175,7 @@ else
 	cd "${PYTHON_SRC_DIR}" && ./configure --enable-shared --prefix="${PYTHON_PREFIX}"
 endif
 
-	make -C "${PYTHON_SRC_DIR}" -j${BUILD_THREADS} > /dev/null
+	make -C "${PYTHON_SRC_DIR}" -j > /dev/null
 
 ifeq (${PLATFORM},macos)
 	make -C "${PYTHON_SRC_DIR}" frameworkinstallframework > /dev/null
@@ -217,7 +215,7 @@ ifeq (${PLATFORM},linux)
 
 ${PATCHELF_EXECUTABLE}: ${PATCHELF_SRC_DIR}
 	cd "${PATCHELF_SRC_DIR}" && ./configure
-	make -C "${PATCHELF_SRC_DIR}" -j${BUILD_THREADS} > /dev/null
+	make -C "${PATCHELF_SRC_DIR}" -j > /dev/null
 
 .PHONY: patchelf
 patchelf: ${PATCHELF_EXECUTABLE}
@@ -300,7 +298,7 @@ ifeq (${PLATFORM},win)
 	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja -j ${BUILD_THREADS}
 	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja install
 else
-	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" -j${BUILD_THREADS} > /dev/null
+	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" -j > /dev/null
 	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" install > /dev/null
 endif
 
@@ -338,7 +336,7 @@ ifeq (${PLATFORM},win)
 	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja install
 	cp "${LLVM_INSTALL_DIR}/bin/libclang.dll" "${PYSIDE_PREFIX}/bin/"
 else
-	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j${BUILD_THREADS}
+	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install
 endif
 
