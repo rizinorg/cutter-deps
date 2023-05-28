@@ -25,7 +25,7 @@ deploy:
   description: "cutter-deps"
   provider: GitHub
   auth_token:
-    secure: KmbKdGN8lEOX7By1hNkfGu7iNA+CVztc2qIO/BPXykFXeeKx6+XQBKgIIq9hDorS
+    secure: 5oG4ryjEAOgFTJVsJJE54wcLnM/Djlzgi7I667/Xr1TtPX0/qGVVRruaFhBmYAV5
   artifact: "%ARTIFACT_PATH%"
   on:
     APPVEYOR_REPO_TAG: true
