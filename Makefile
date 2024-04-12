@@ -22,17 +22,18 @@ endif
 PKG_FILES=pyside
 
 ifeq (${PYTHON_WINDOWS},)
-PYTHON_VERSION=3.9.13
-PYTHON_VERSION_MAJOR_MINOR=3.9
+PYTHON_VERSION=3.12.4
+PYTHON_VERSION_MAJOR_MINOR=3.12
 PYTHON_SRC_FILE=Python-${PYTHON_VERSION}.tar.xz
-PYTHON_SRC_SHA256=125b0c598f1e15d2aa65406e83f792df7d171cdf38c16803b149994316a3080f
+PYTHON_SRC_SHA256=f6d419a6d8743ab26700801b4908d26d97e8b986e14f95de31b32de2b0e79554
 
 PYTHON_SRC_URL=https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz
 PYTHON_SRC_DIR=Python-${PYTHON_VERSION}
 PYTHON_DEPS=python
 PKG_FILES+=python
 ifeq (${PLATFORM},macos)
-  PYTHON_FRAMEWORK=${ROOT_DIR}/python/Python.framework
+  PYTHON_FRAMWORK_DIR=${ROOT_DIR}/python/Library/Frameworks
+  PYTHON_FRAMEWORK=${PYTHON_FRAMWORK_DIR}/Python.framework
   PYTHON_PREFIX=${PYTHON_FRAMEWORK}/Versions/Current
 else
   PYTHON_PREFIX:=${ROOT_DIR}/python
@@ -60,11 +61,11 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 ifeq (${QT_PREFIX},)
 QT_BIN_FILE=cutter-deps-qt-${PLATFORM}-${ARCH}.tar.gz
 PACKAGE_FILE=cutter-deps-${PLATFORM}-${ARCH}.tar.gz
-QT_BIN_URL=https://github.com/rizinorg/cutter-deps-qt/releases/download/v12/${QT_BIN_FILE}
-QT_BIN_SHA256_linux_x86_64=3aa9a1b9b137d35086ca7dcfb7ea59e25ee0947c0952a2af14942d968e2f8516
-QT_BIN_SHA256_macos_arm64=895cd5f8c557f28a040b0c8b620498f1a09f86daa4f026fc445c16dd42fa503e
-QT_BIN_SHA256_macos_x86_64=fe92b328492024ed2a02bfc6b154929a46e02eaa78843f7a0d916c703cce6185
-QT_BIN_SHA256_win_x86_64=a852631a9f24ac4498bc9c7927004627efe766b2e1486fc2bc96c9b10274a4b6
+QT_BIN_URL=https://github.com/karliss/cutter-deps-qt/releases/download/test1/${QT_BIN_FILE}
+QT_BIN_SHA256_linux_x86_64=c27175f759a38385750bbe5c872b44eadb0e2f17055281c07851197341393a81
+QT_BIN_SHA256_macos_arm64=4a308d3c460965111686ca2ee8c1cfe13aa6ee8b9ef17f668e07b4af5997a2f8
+QT_BIN_SHA256_macos_x86_64=f9e05afa0318b301f700868d297309fdb5cad9f8042793e5cfcb4d3e7128539c
+QT_BIN_SHA256_win_x86_64=693786cba68ec945b096fc1b07c5aa76eb003883d807e9b9c41f095a2f672226
 QT_BIN_SHA256=${QT_BIN_SHA256_${PLATFORM}_${ARCH}}
 QT_BIN_DIR=qt
 QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
@@ -77,17 +78,17 @@ QT_OPENGL_ENABLED:=1
 QT_DEPS=
 endif
 
-QT_VERSION=5.15.5
+QT_VERSION=6.7.2
 ifeq (${PLATFORM},win)
   # Windows has some issues with symlinks in the tarball
-  PYSIDE_SRC_FILE=pyside-setup-opensource-src-${QT_VERSION}.zip
-  PYSIDE_SRC_SHA256=d1c61308c53636823c1d0662f410966e4a57c2681b551003e458b2cc65902c41
+  PYSIDE_SRC_FILE=pyside-setup-everywhere-src-${QT_VERSION}.zip
+  PYSIDE_SRC_SHA256=cde443ce209787e0008a2c510d9d390423ea8876083b356d8148272c1234c102
 else
-  PYSIDE_SRC_FILE=pyside-setup-opensource-src-${QT_VERSION}.tar.xz
-  PYSIDE_SRC_SHA256=3920a4fb353300260c9bc46ff70f1fb975c5e7efa22e9d51222588928ce19b33
+  PYSIDE_SRC_FILE=pyside-setup-everywhere-src-${QT_VERSION}.tar.xz
+  PYSIDE_SRC_SHA256=3a2b0d0d6e78c9aa5ddc7f06ca4b6f11a3fe14560baeb148eea53b5d98e368c7
 endif
-PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${QT_VERSION}-src/${PYSIDE_SRC_FILE}
-PYSIDE_SRC_DIR=pyside-setup-opensource-src-${QT_VERSION}
+PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-${QT_VERSION}-src/${PYSIDE_SRC_FILE}
+PYSIDE_SRC_DIR=pyside-setup-everywhere-src-${QT_VERSION}
 PYSIDE_PREFIX=${ROOT_DIR}/pyside
 
 ifeq (${PLATFORM},linux)
@@ -131,7 +132,7 @@ endef
 define download_extract
 	curl -L "$1" -o "$2"
 	${call check_sha256,$2,$3}
-	$(if $(patsubst %.zip,,$(lastword $2)),tar -xf,7z x -bsp1) "$2"
+	$(if $(patsubst %.zip,,$(lastword $2)),tar --no-same-owner -xf,7z x -bsp1) "$2"
 endef
 
 ${PYTHON_SRC_DIR} ${QT_BIN_DIR} ${PATCHELF_SRC_DIR}:
@@ -160,17 +161,18 @@ python: ${PYTHON_SRC_DIR} ${PATCHELF_TARGET}
 	@echo "# Building Python       #"
 	@echo "#########################"
 	@echo ""
+	@echo "platform ${PLATFORM}"
 
 ifeq (${PLATFORM}-${ARCH},macos-x86_64)
 	cd "${PYTHON_SRC_DIR}" && \
 		CPPFLAGS="${CPPFLAGS} -I$(shell brew --prefix openssl)/include" \
 		LDFLAGS="${LDFLAGS} -L$(shell brew --prefix openssl)/lib" \
-		./configure --enable-framework="${ROOT_DIR}/python" --prefix="${ROOT_DIR}/python_prefix_tmp"
+		./configure --enable-framework="${PYTHON_FRAMWORK_DIR}" --prefix="${ROOT_DIR}/python_prefix_tmp"
 	# Patch for https://github.com/rizinorg/cutter/issues/424
 	sed -i ".original" "s/#define HAVE_GETENTROPY 1/#define HAVE_GETENTROPY 0/" "${PYTHON_SRC_DIR}/pyconfig.h"
 else ifeq (${PLATFORM},macos)
 	cd "${PYTHON_SRC_DIR}" && \
-		./configure --enable-framework="${ROOT_DIR}/python" --prefix="${ROOT_DIR}/python_prefix_tmp"
+		./configure --enable-framework="${PYTHON_FRAMWORK_DIR}" --prefix="${ROOT_DIR}/python_prefix_tmp"
 else
 	cd "${PYTHON_SRC_DIR}" && ./configure --enable-shared --prefix="${PYTHON_PREFIX}"
 endif
@@ -178,10 +180,10 @@ endif
 	make -C "${PYTHON_SRC_DIR}" -j > /dev/null
 
 ifeq (${PLATFORM},macos)
-	make -C "${PYTHON_SRC_DIR}" frameworkinstallframework > /dev/null
+	make -C "${PYTHON_SRC_DIR}" frameworkinstallframework
 else
 	make -C "${PYTHON_SRC_DIR}" install > /dev/null
-endif
+endif	
 
 ifeq (${PLATFORM},linux)
 	for lib in "${PYTHON_PREFIX}/lib/python${PYTHON_VERSION_MAJOR_MINOR}/lib-dynload"/*.so ; do \
@@ -243,7 +245,7 @@ distclean-qt: clean-qt
 ifeq (${PLATFORM},win)
 PLATFORM_CMAKE_ARGS=-G Ninja -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DFORCE_LIMITED_API=yes
 else
-PLATFORM_CMAKE_ARGS=
+PLATFORM_CMAKE_ARGS=-DFORCE_LIMITED_API=no
 endif
 
 ${PYSIDE_SRC_DIR}:
@@ -259,12 +261,9 @@ ${PYSIDE_SRC_DIR}:
 	
 	# Patch needed, so the PySide2 CMakeLists.txt doesn't search for Qt5UiTools and other stuff,
 	# which would mess up finding the actual modules later.
-	patch "${PYSIDE_SRC_DIR}/sources/pyside2/CMakeLists.txt" patch/pyside-5.15.2/CMakeLists.txt.patch
-	echo "" > "${PYSIDE_SRC_DIR}/sources/pyside2/cmake/Macros/FindQt5Extra.cmake"
+	patch "${PYSIDE_SRC_DIR}/sources/pyside6/CMakeLists.txt" patch/pyside-5.15.2/CMakeLists.txt.patch
 
-# ifeq (${PLATFORM},win)
-	patch "${PYSIDE_SRC_DIR}/sources/shiboken2/generator/CMakeLists.txt" patch/pyside-5.15.2/shiboken_executable_install.patch
-#endif
+	#patch "${PYSIDE_SRC_DIR}/sources/shiboken6/libshiboken/sbkmodule.cpp" patch/skbmodule_2765.patch
 
 ifneq (${QT_OPENGL_ENABLED},1)
 	# Patches to remove OpenGL-related source files.
@@ -272,72 +271,74 @@ ifneq (${QT_OPENGL_ENABLED},1)
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtWidgets/CMakeLists.txt" patch/pyside-5.12.1/QtWidgets-CMakeLists.txt.patch
 endif
 
+ifeq (${PLATFORM},win)
+# automatic msys -> windows path conversion doesn't detect semicolon separated paths
+# cmake uses ; on all platforms
+EXTRA_CMAKE_PREFIX="${QT_PREFIX}:${PYSIDE_PREFIX}"
+else
+EXTRA_CMAKE_PREFIX="${QT_PREFIX};${PYSIDE_PREFIX}"
+endif
+
 pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 	@echo ""
 	@echo "#########################"
-	@echo "# Building Shiboken2    #"
+	@echo "# Building Shiboken     #"
 	@echo "#########################"
 	@echo ""
 
 	echo "$$LLVM_INSTALL_DIR"
 
-	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken2"
-	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && cmake \
+	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken6"
+	cd "${PYSIDE_SRC_DIR}/build/shiboken6" && cmake \
 		${PLATFORM_CMAKE_ARGS} \
 		-DCMAKE_PREFIX_PATH="${QT_PREFIX}" \
 		-DCMAKE_INSTALL_PREFIX="${PYSIDE_PREFIX}" \
 		-DUSE_PYTHON_VERSION=3 \
-		-DPYTHON_LIBRARY="${PYTHON_LIBRARY}" \
-		-DPYTHON_INCLUDE_DIR="${PYTHON_INCLUDE_DIR}" \
-		-DPYTHON_EXECUTABLE="${PYTHON_EXECUTABLE}" \
+		-DPython_ROOT_DIR="${PYTHON_PREFIX}" \
 		-DBUILD_TESTS=OFF \
 		-DCMAKE_BUILD_TYPE=Release \
-		../../sources/shiboken2
+		../../sources/shiboken6
 
-ifeq (${PLATFORM},win)
-	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja -j ${BUILD_THREADS}
-	cd "${PYSIDE_SRC_DIR}/build/shiboken2" && ninja install
-else
-	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" -j > /dev/null
-	make -C "${PYSIDE_SRC_DIR}/build/shiboken2" install > /dev/null
-endif
+	cmake --build "${PYSIDE_SRC_DIR}/build/shiboken6" -j
+	cmake --install "${PYSIDE_SRC_DIR}/build/shiboken6"
+	@echo "shiboken compiled"
 
 ifeq (${PLATFORM},macos)
-	install_name_tool -add_rpath @executable_path/../../qt/lib "${PYSIDE_PREFIX}/bin/shiboken2"
+	install_name_tool -add_rpath @executable_path/../../qt/lib "${PYSIDE_PREFIX}/bin/shiboken6"
 ifeq (${ARCH},arm64)
 	# Our arm64 builder has llvm-14 installed with MacPorts
-	install_name_tool -add_rpath /opt/local/libexec/llvm-14/lib "${PYSIDE_PREFIX}/bin/shiboken2"
+	install_name_tool -add_rpath /opt/local/libexec/llvm-14/lib "${PYSIDE_PREFIX}/bin/shiboken6"
 endif
 endif
 
 	@echo ""
 	@echo "#########################"
-	@echo "# Building PySide2      #"
+	@echo "# Building PySide       #"
 	@echo "#########################"
 	@echo ""
 
-	mkdir -p "${PYSIDE_SRC_DIR}/build/pyside2"
-	cd "${PYSIDE_SRC_DIR}/build/pyside2" && cmake \
+	@echo ${EXTRA_CMAKE_PREFIX}
+
+	mkdir -p "${PYSIDE_SRC_DIR}/build/pyside6"
+	cd "${PYSIDE_SRC_DIR}/build/pyside6" && cmake \
 		${PLATFORM_CMAKE_ARGS} \
-		-DCMAKE_PREFIX_PATH="${QT_PREFIX};${PYSIDE_PREFIX}" \
+		-DCMAKE_PREFIX_PATH=${EXTRA_CMAKE_PREFIX} \
 		-DCMAKE_INSTALL_PREFIX="${PYSIDE_PREFIX}" \
 		-DUSE_PYTHON_VERSION=3 \
-		-DPYTHON_LIBRARY="${PYTHON_LIBRARY}" \
-		-DPYTHON_INCLUDE_DIR="${PYTHON_INCLUDE_DIR}" \
-		-DPYTHON_EXECUTABLE="${PYTHON_EXECUTABLE}" \
+		-DPython_ROOT_DIR="${PYTHON_PREFIX}" \
 		-DBUILD_TESTS=OFF \
 		-DCMAKE_CXX_FLAGS=-w \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DMODULES="Core;Gui;Widgets" \
-		../../sources/pyside2
+		../../sources/pyside6
 
 ifeq (${PLATFORM},win)
-	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja -j ${BUILD_THREADS}
-	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja install
+	cmake --build "${PYSIDE_SRC_DIR}/build/pyside6"
+	cmake --install "${PYSIDE_SRC_DIR}/build/pyside6"
 	cp "${LLVM_INSTALL_DIR}/bin/libclang.dll" "${PYSIDE_PREFIX}/bin/"
 else
-	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j
-	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install
+	make -C "${PYSIDE_SRC_DIR}/build/pyside6" -j1
+	make -C "${PYSIDE_SRC_DIR}/build/pyside6" install
 endif
 
 .PHONY: clean-pyside
@@ -375,6 +376,11 @@ clean-env.sh:
 
 ${PACKAGE_FILE}: ${PKG_FILES}
 	tar -czf "${PACKAGE_FILE}" ${PKG_FILES}
+ifeq (${PLATFORM},macos)
+	shasum -a 256 "${PACKAGE_FILE}"
+else
+	sha256sum "${PACKAGE_FILE}"
+endif
 
 .PHONY: pkg
 pkg: ${PACKAGE_FILE}

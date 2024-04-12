@@ -16,33 +16,22 @@ concurrency:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:18.04
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
     steps:
     - uses: actions/checkout@v3
-    - name: set timezone
+    - name: build linux outputs
       run: |
-        # Fix timezone on ubuntu to prevent user input request during the apt-get phase.
-        export TZ=UTC
-        ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-    - name: build linux
-      shell: bash
-      run: |
-        apt-get -y update
-        apt-get -y install build-essential \
-                             libclang-8-dev \
-                             llvm-8 \
-                             libglib2.0-dev \
+        sudo apt-get -y update
+        sudo apt-get -y install build-essential \
+                             libclang-12-dev \
+                             llvm-12 \
+                             cmake \
                              mesa-common-dev \
                              libgl1-mesa-dev \
-                             zlib1g-dev \
-                             libpcre2-dev \
-                             cmake \
-                             curl \
-                             wget
+                             curl
+        sudo apt remove llvm-10 clang-10
         make
         echo UPLOAD_FILE=cutter-deps-linux-x86_64.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
@@ -66,18 +55,83 @@ jobs:
           asset_path: ${{ env.UPLOAD_FILE }}
           asset_name: ${{ env.UPLOAD_FILE }}
           asset_content_type: ${{ env.UPLOAD_ASSET_TYPE }}
-
-  build-macos:
-    runs-on: macos-latest
+  build-windows:
+    runs-on: windows-2019
     strategy:
       fail-fast: false
+    steps:
+    - uses: actions/checkout@v3
+    #- name: msys setup
+    #  shell: 'C:/shells/msys2bash.cmd {0}'
+    #  run: |
+    #    set -euo pipefail
+    #    pwd
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: build windows ouptuts
+      shell: cmd
+      run: |
+        pwd
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        where cl
+        where python
+        set MSYS2_PATH_TYPE=inherit
+        C:/shells/msys2bash.cmd "./scripts/build_win.sh"
+
+    - name: set windows outputs
+      shell: bash
+      run: |
+        echo UPLOAD_FILE=cutter-deps-win-x86_64.tar.gz >> $GITHUB_ENV
+        echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.UPLOAD_FILE }}
+        path: ${{ env.UPLOAD_FILE }}
+    - name: Get release
+      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+      id: get_release
+      uses: karliss/get-release@bee343636450eb2e9b85d9f1592d8d73c408dc74
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload release assets
+      if: steps.get_release.outputs.upload_url != null
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ${{ env.UPLOAD_FILE }}
+          asset_name: ${{ env.UPLOAD_FILE }}
+          asset_content_type: ${{ env.UPLOAD_ASSET_TYPE }}
+  build-macos:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        name: [
+              macos-x86_64,
+              macos-arm64,
+            ]
+        include:
+          - name: macos-x86_64
+            os: macos-12
+            arch: x86_64
+          - name: macos-arm64
+            os: macos-14
+            arch: arm64
     steps:
     - uses: actions/checkout@v3
     - name: build macos
       run: |
         set -euo pipefail
         brew install llvm ccache
-        export PATH="/usr/local/opt/llvm/bin:$PATH";
+        if [ "${{ matrix.arch }}" = "arm64" ]; then
+          export CMAKE_PREFIX_PATH="$HOMEBREW_PREFIX/opt/llvm";
+        else
+          export CMAKE_PREFIX_PATH="/usr/local/opt/llvm";
+        fi
         echo "###### Applications ######"
         ls /Applications
         echo "###### XCode Info ######"
@@ -86,9 +140,8 @@ jobs:
         echo "$BUILD_SDK_PATH"
         echo "###### xcode-select Info ######"
         xcode-select -print-path
-        echo "###### LLVM Info ######"
-        which llvm-config
-        llvm-config --version
+        which clang
+        brew info llvm
         echo "###### Make ######"
         export MACOSX_DEPLOYMENT_TARGET=11.0
         export MIN_SUPPORTED_MACOSX_DEPLOYMENT_TARGET=11.0
@@ -96,7 +149,7 @@ jobs:
         export CCFLAGS=" -isysroot $BUILD_SDK_PATH "
         export CXXFLAGS=" -isysroot $BUILD_SDK_PATH "
         make
-        echo UPLOAD_FILE=cutter-deps-macos-x86_64.tar.gz >> $GITHUB_ENV
+        echo UPLOAD_FILE=cutter-deps-macos-${{ matrix.arch }}.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
     - uses: actions/upload-artifact@v2
       with:
