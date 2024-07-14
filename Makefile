@@ -183,7 +183,7 @@ ifeq (${PLATFORM},macos)
 	make -C "${PYTHON_SRC_DIR}" frameworkinstallframework
 else
 	make -C "${PYTHON_SRC_DIR}" install > /dev/null
-endif	
+endif
 
 ifeq (${PLATFORM},linux)
 	for lib in "${PYTHON_PREFIX}/lib/python${PYTHON_VERSION_MAJOR_MINOR}/lib-dynload"/*.so ; do \
@@ -240,7 +240,7 @@ clean-qt:
 
 distclean-qt: clean-qt
 
-# Shiboken2 + PySide2
+# Shiboken + PySide
 
 ifeq (${PLATFORM},win)
 PLATFORM_CMAKE_ARGS=-G Ninja -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DFORCE_LIMITED_API=yes
@@ -251,7 +251,7 @@ endif
 ${PYSIDE_SRC_DIR}:
 	@echo ""
 	@echo "#########################"
-	@echo "# Downloading PySide2   #"
+	@echo "# Downloading PySide    #"
 	@echo "#########################"
 	@echo ""
 
@@ -263,7 +263,6 @@ ${PYSIDE_SRC_DIR}:
 	# which would mess up finding the actual modules later.
 	patch "${PYSIDE_SRC_DIR}/sources/pyside6/CMakeLists.txt" patch/pyside-5.15.2/CMakeLists.txt.patch
 
-	#patch "${PYSIDE_SRC_DIR}/sources/shiboken6/libshiboken/sbkmodule.cpp" patch/skbmodule_2765.patch
 
 ifneq (${QT_OPENGL_ENABLED},1)
 	# Patches to remove OpenGL-related source files.
