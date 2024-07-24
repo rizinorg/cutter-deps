@@ -1,12 +1,12 @@
---- sources/pyside2/CMakeLists.txt	2020-11-11 14:51:30.000000000 +0200
-+++ sources/pyside2/CMakeListsAfter.txt	2020-12-07 22:48:36.144247404 +0200
-@@ -252,7 +252,8 @@
- #####################################################################
+--- sources/pyside6/CMakeLists.txt	2020-11-11 14:51:30.000000000 +0200
++++ sources/pyside6/CMakeListsAfter.txt	2020-12-07 22:48:36.144247404 +0200
+@@ -19,7 +19,8 @@
  
- add_subdirectory(libpyside)
--find_package(Qt${QT_MAJOR_VERSION}Designer)
-+#find_package(Qt${QT_MAJOR_VERSION}Designer)
-+set(Qt${QT_MAJOR_VERSION}Designer_FOUND FALSE)
- if(${QT_MAJOR_VERSION} LESS 6 AND Qt${QT_MAJOR_VERSION}UiTools_FOUND
-    AND Qt${QT_MAJOR_VERSION}Designer_FOUND)
-     add_subdirectory(plugins)
+ if(Qt${QT_MAJOR_VERSION}UiTools_FOUND)
+     add_subdirectory(plugins/uitools)
+-    find_package(Qt6 COMPONENTS Designer)
++    #find_package(Qt6 COMPONENTS Designer)
++    set(Qt${QT_MAJOR_VERSION}Designer_FOUND FALSE)
+     # PYSIDE-535: Enable when PyPy supports embedding
+     if (Qt${QT_MAJOR_VERSION}Designer_FOUND AND NOT PYPY_VERSION)
+         add_subdirectory(plugins/designer)

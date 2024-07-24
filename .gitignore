@@ -3,7 +3,7 @@
 /python
 /test
 /qt-everywhere-src-*
-/pyside-setup-opensource-src-*
+/pyside-setup-*-src-*
 /Python-3.*
 /patchelf-0.9*
 /cutter-deps-*-*.tar.gz
