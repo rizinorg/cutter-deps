@@ -17,35 +17,18 @@ concurrency:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    container:
-      image: ubuntu:18.04
     strategy:
       fail-fast: false
     steps:
     - uses: actions/checkout@v3
-    - name: set timezone
-      run: |
-        # Fix timezone on ubuntu to prevent user input request during the apt-get phase.
-        export TZ=UTC
-        ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
     - name: build linux
+      uses: ./.github/actions/build_linux
+    - name: build linux outputs
       shell: bash
       run: |
-        apt-get -y update
-        apt-get -y install build-essential \
-                             libclang-8-dev \
-                             llvm-8 \
-                             libglib2.0-dev \
-                             mesa-common-dev \
-                             libgl1-mesa-dev \
-                             zlib1g-dev \
-                             libpcre2-dev \
-                             cmake \
-                             curl \
-                             wget
-        make
-        echo UPLOAD_FILE=cutter-deps-linux-x86_64.tar.gz >> $GITHUB_ENV
+        echo UPLOAD_FILE=cutter-deps-q5-linux-x86_64.tar.gz >> $GITHUB_ENV
         echo UPLOAD_ASSET_TYPE=application/gzip >> $GITHUB_ENV
+        sha256sum cutter-deps-q5-linux-x86_64.tar.gz
     - uses: actions/upload-artifact@v4
       with:
         name: ${{ env.UPLOAD_FILE }}

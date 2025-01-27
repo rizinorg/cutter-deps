@@ -17,7 +17,10 @@ for file in $REPLACE_FILES; do
 	if [ "${PLATFORM}" == "macos" ]; then
 		sed -i".original" -e "s/$ORIGINAL_ROOT_ESCAPED/$CURRENT_ROOT_ESCAPED/g" "$file"
 	else
-		sed -i -e "s/$ORIGINAL_ROOT_ESCAPED/$CURRENT_ROOT_ESCAPED/g" "$file"
+		if [ ! -L "$file" ]; then
+			# don't process symlinks as that results in duplicate substitation
+			sed -i -e "s/$ORIGINAL_ROOT_ESCAPED/$CURRENT_ROOT_ESCAPED/g" "$file"
+		fi
 	fi
 done
 

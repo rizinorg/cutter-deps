@@ -1,0 +1,7 @@
+name: 'Build linux'
+description: 'Build cutter deps in a docker image'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  entrypoint: './.github/actions/build_linux/entrypoint.sh'
+

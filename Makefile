@@ -22,10 +22,10 @@ endif
 PKG_FILES=pyside
 
 ifeq (${PYTHON_WINDOWS},)
-PYTHON_VERSION=3.9.13
-PYTHON_VERSION_MAJOR_MINOR=3.9
+PYTHON_VERSION=3.11.11
+PYTHON_VERSION_MAJOR_MINOR=3.11
 PYTHON_SRC_FILE=Python-${PYTHON_VERSION}.tar.xz
-PYTHON_SRC_SHA256=125b0c598f1e15d2aa65406e83f792df7d171cdf38c16803b149994316a3080f
+PYTHON_SRC_SHA256=2a9920c7a0cd236de33644ed980a13cbbc21058bfdc528febb6081575ed73be3
 
 PYTHON_SRC_URL=https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz
 PYTHON_SRC_DIR=Python-${PYTHON_VERSION}
@@ -58,10 +58,10 @@ PATCHELF_EXECUTABLE=${PATCHELF_SRC_DIR}/src/patchelf
 ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 
 ifeq (${QT_PREFIX},)
-QT_BIN_FILE=cutter-deps-qt-${PLATFORM}-${ARCH}.tar.gz
-PACKAGE_FILE=cutter-deps-${PLATFORM}-${ARCH}.tar.gz
-QT_BIN_URL=https://github.com/rizinorg/cutter-deps-qt/releases/download/v12/${QT_BIN_FILE}
-QT_BIN_SHA256_linux_x86_64=3aa9a1b9b137d35086ca7dcfb7ea59e25ee0947c0952a2af14942d968e2f8516
+QT_BIN_FILE=cutter-deps-qt5-${PLATFORM}-${ARCH}.tar.gz
+PACKAGE_FILE=cutter-deps-q5-${PLATFORM}-${ARCH}.tar.gz
+QT_BIN_URL=https://github.com/rizinorg/cutter-deps-qt/releases/download/qt5-v15/${QT_BIN_FILE}
+QT_BIN_SHA256_linux_x86_64=1998021a210b8e912e995238da20a75dc18f7add97a44c43ad95e5473f8dd024
 QT_BIN_SHA256_macos_arm64=895cd5f8c557f28a040b0c8b620498f1a09f86daa4f026fc445c16dd42fa503e
 QT_BIN_SHA256_macos_x86_64=fe92b328492024ed2a02bfc6b154929a46e02eaa78843f7a0d916c703cce6185
 QT_BIN_SHA256_win_x86_64=a852631a9f24ac4498bc9c7927004627efe766b2e1486fc2bc96c9b10274a4b6
@@ -77,14 +77,14 @@ QT_OPENGL_ENABLED:=1
 QT_DEPS=
 endif
 
-QT_VERSION=5.15.5
+QT_VERSION=5.15.16
 ifeq (${PLATFORM},win)
   # Windows has some issues with symlinks in the tarball
   PYSIDE_SRC_FILE=pyside-setup-opensource-src-${QT_VERSION}.zip
   PYSIDE_SRC_SHA256=d1c61308c53636823c1d0662f410966e4a57c2681b551003e458b2cc65902c41
 else
   PYSIDE_SRC_FILE=pyside-setup-opensource-src-${QT_VERSION}.tar.xz
-  PYSIDE_SRC_SHA256=3920a4fb353300260c9bc46ff70f1fb975c5e7efa22e9d51222588928ce19b33
+  PYSIDE_SRC_SHA256=6d3ed6fd17275ea74829ab56df9c2e7641bfca6b5b201cf244998fa81cf07360
 endif
 PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${QT_VERSION}-src/${PYSIDE_SRC_FILE}
 PYSIDE_SRC_DIR=pyside-setup-opensource-src-${QT_VERSION}
@@ -129,7 +129,7 @@ define check_sha256
 endef
 
 define download_extract
-	curl -L "$1" -o "$2"
+	curl --http1.1 -L "$1" -o "$2"
 	${call check_sha256,$2,$3}
 	$(if $(patsubst %.zip,,$(lastword $2)),tar -xf,7z x -bsp1) "$2"
 endef
@@ -336,7 +336,7 @@ ifeq (${PLATFORM},win)
 	cd "${PYSIDE_SRC_DIR}/build/pyside2" && ninja install
 	cp "${LLVM_INSTALL_DIR}/bin/libclang.dll" "${PYSIDE_PREFIX}/bin/"
 else
-	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j
+	make -C "${PYSIDE_SRC_DIR}/build/pyside2" -j2
 	make -C "${PYSIDE_SRC_DIR}/build/pyside2" install
 endif
 
