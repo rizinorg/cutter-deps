@@ -61,11 +61,11 @@ ${PATCHELF_SRC_DIR}_target=PATCHELF_SRC
 ifeq (${QT_PREFIX},)
 QT_BIN_FILE=cutter-deps-qt-${PLATFORM}-${ARCH}.tar.gz
 PACKAGE_FILE=cutter-deps-${PLATFORM}-${ARCH}.tar.gz
-QT_BIN_URL=https://github.com/rizinorg/cutter-deps-qt/releases/download/v14/${QT_BIN_FILE}
-QT_BIN_SHA256_linux_x86_64=2e7f6af35b2aab46b5fcd637b2035527ab378c3dc209bcbb84cd82e6cea120fb
-QT_BIN_SHA256_macos_arm64=80cb4faf70dc4cca9c745ecaf6a924fb6b6ed55a3dd0ae45071b10c53bd4a294
-QT_BIN_SHA256_macos_x86_64=7d76c9630020ab52e97e43fbb251c3c8ff9669c1b631d88a2594cd6279cfe1ca
-QT_BIN_SHA256_win_x86_64=61e5023363d13eabf8c62e86c6dd6f0cb80a001bb4e51d0e1348387b13857ca3
+QT_BIN_URL=https://github.com/rizinorg/cutter-deps-qt/releases/download/v16/${QT_BIN_FILE}
+QT_BIN_SHA256_linux_x86_64=e24e720565993e1515908491ea30d41778066adc0673f1bf11f7b566e64f9a82
+QT_BIN_SHA256_macos_arm64=fb27202657e0e21edc1d1d64516f656396f8826bb92e160208150e2908295f72
+QT_BIN_SHA256_macos_x86_64=61bdd40e59e273218036faa48b37b6270606c4a655ca6d09d23c4fbb05197613
+QT_BIN_SHA256_win_x86_64=6a7e8052ca7494a069fb77dd371e7a07b10328f153eaebd8ab17f8bd34e44feb
 QT_BIN_SHA256=${QT_BIN_SHA256_${PLATFORM}_${ARCH}}
 QT_BIN_DIR=qt
 QT_PREFIX:=${ROOT_DIR}/${QT_BIN_DIR}
@@ -78,14 +78,14 @@ QT_OPENGL_ENABLED:=1
 QT_DEPS=
 endif
 
-QT_VERSION=6.7.2
+QT_VERSION=6.11.0
 ifeq (${PLATFORM},win)
   # Windows has some issues with symlinks in the tarball
   PYSIDE_SRC_FILE=pyside-setup-everywhere-src-${QT_VERSION}.zip
-  PYSIDE_SRC_SHA256=cde443ce209787e0008a2c510d9d390423ea8876083b356d8148272c1234c102
+  PYSIDE_SRC_SHA256=887326afd5e98af50499536e4b561333d1845a19c6b5493b9256bba973eabc16
 else
   PYSIDE_SRC_FILE=pyside-setup-everywhere-src-${QT_VERSION}.tar.xz
-  PYSIDE_SRC_SHA256=3a2b0d0d6e78c9aa5ddc7f06ca4b6f11a3fe14560baeb148eea53b5d98e368c7
+  PYSIDE_SRC_SHA256=48d5c44d7c3ed861055d5491486e6a220ef5006573cae01a5fae3fb69d786336
 endif
 PYSIDE_SRC_URL=https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-${QT_VERSION}-src/${PYSIDE_SRC_FILE}
 PYSIDE_SRC_DIR=pyside-setup-everywhere-src-${QT_VERSION}
@@ -270,13 +270,7 @@ ifneq (${QT_OPENGL_ENABLED},1)
 	patch "${PYSIDE_SRC_DIR}/sources/pyside2/PySide2/QtWidgets/CMakeLists.txt" patch/pyside-5.12.1/QtWidgets-CMakeLists.txt.patch
 endif
 
-ifeq (${PLATFORM},win)
-# automatic msys -> windows path conversion doesn't detect semicolon separated paths
-# cmake uses ; on all platforms
-EXTRA_CMAKE_PREFIX="${QT_PREFIX}:${PYSIDE_PREFIX}"
-else
 EXTRA_CMAKE_PREFIX="${QT_PREFIX};${PYSIDE_PREFIX}"
-endif
 
 pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 	@echo ""
@@ -287,10 +281,24 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 
 	echo "$$LLVM_INSTALL_DIR"
 
+	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken6_generator"
+	cd "${PYSIDE_SRC_DIR}/build/shiboken6_generator" && cmake \
+		${PLATFORM_CMAKE_ARGS} \
+		-DCMAKE_PREFIX_PATH="${QT_PREFIX}" \
+		-DCMAKE_INSTALL_PREFIX="${PYSIDE_PREFIX}" \
+		-DUSE_PYTHON_VERSION=3 \
+		-DPython_ROOT_DIR="${PYTHON_PREFIX}" \
+		-DBUILD_TESTS=OFF \
+		-DCMAKE_BUILD_TYPE=Release \
+		../../sources/shiboken6_generator
+	
+	cmake --build "${PYSIDE_SRC_DIR}/build/shiboken6_generator" -j
+	cmake --install "${PYSIDE_SRC_DIR}/build/shiboken6_generator"
+
 	mkdir -p "${PYSIDE_SRC_DIR}/build/shiboken6"
 	cd "${PYSIDE_SRC_DIR}/build/shiboken6" && cmake \
 		${PLATFORM_CMAKE_ARGS} \
-		-DCMAKE_PREFIX_PATH="${QT_PREFIX}" \
+		-DCMAKE_PREFIX_PATH=${EXTRA_CMAKE_PREFIX} \
 		-DCMAKE_INSTALL_PREFIX="${PYSIDE_PREFIX}" \
 		-DUSE_PYTHON_VERSION=3 \
 		-DPython_ROOT_DIR="${PYTHON_PREFIX}" \
@@ -305,8 +313,7 @@ pyside: ${PYTHON_DEPS} ${QT_DEPS} ${PYSIDE_SRC_DIR}
 ifeq (${PLATFORM},macos)
 	install_name_tool -add_rpath @executable_path/../../qt/lib "${PYSIDE_PREFIX}/bin/shiboken6"
 ifeq (${ARCH},arm64)
-	# Our arm64 builder has llvm-14 installed with MacPorts
-	install_name_tool -add_rpath /opt/local/libexec/llvm-14/lib "${PYSIDE_PREFIX}/bin/shiboken6"
+	install_name_tool -add_rpath /opt/local/libexec/llvm-20/lib "${PYSIDE_PREFIX}/bin/shiboken6"
 endif
 endif
 
@@ -338,6 +345,10 @@ ifeq (${PLATFORM},win)
 else
 	make -C "${PYSIDE_SRC_DIR}/build/pyside6" -j1
 	make -C "${PYSIDE_SRC_DIR}/build/pyside6" install
+endif
+
+ifeq (${PLATFORM},macos)
+	install_name_tool -delete_rpath "/Users/runner/work/cutter-deps/cutter-deps/qt/lib" "${PYSIDE_PREFIX}/lib/libpyside6.cpython-312-darwin.6.11.dylib"
 endif
 
 .PHONY: clean-pyside
